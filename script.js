@@ -30,9 +30,14 @@ function update(room, context) {
     console.log(imageObj.src);
   });
 }
+function url_parameter(name) {
+  // from here: http://snipplr.com/view/26662/get-url-parameters-with-jquery--improved/
+  var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+  if (!results) { return 0; }
+  return results[1] || 0;
+}
 
 function go(name, room, color) {
-  $('input[name="share-url"]').val(window.location.href + 'room/' + room);
   setInterval(function() {
     getUsers(room)
   }, 1337);
@@ -98,22 +103,35 @@ function go(name, room, color) {
 }
 
 $(function() {
-  var room, color;
-  $.get('/get-a-room', function(data) {
-    room = data;
-    smoke.prompt('We gave you a room: ' + room + '. What\'s your name?', function(name) {
+  var room, color, prompt;
+  var room_parameter = url_parameter('room');
+  if (room_parameter !== 0) {
+    room = room_parameter;
+    prompt = 'You joined a room: ' + room + '. Enter a nickname:';
+    $('input[name="share-url"]').val(window.location.href);
+    show_prompt(prompt);
+  }
+  else {
+    $.get('/get-a-room', function(data) {
+      room = data;
+      $('input[name="share-url"]').val(window.location.href + '?room=' + room);
+      show_prompt('You joined a new room: ' + room + '. Enter a nickname:');
+    });
+  }
+  
+  function show_prompt (prompt) {
+    smoke.prompt(prompt, function(name) {
       if (name) {
         $.get('/join', {
-            name: name,
-            room: room
+          name: name,
+          room: room
           }, function(data) {
             color = data;
             go(name, room, color);
-          }
-        );
+          });
       } else {
         location.reload();
       }
     });
-  });
+  };
 });
