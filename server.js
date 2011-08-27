@@ -27,10 +27,14 @@ var app = http.createServer(function (req, res) {
     break;
     case '/join':
       var name = url.parse(req.url).query.toString().replace('name=', '');
-      users[name] = {name: name, color: genColor()};
+      users[name] = {name: name, color: genColor(), coord: []};
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
       console.log(users);
+    break;
+    case '/draw':
+      var name = url.parse(req.url).query.toString().replace('name=', '');
+      users[name].coord.push('asdf');
     break;
     default:
       var file = path.join(process.cwd(), uri);

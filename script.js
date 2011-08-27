@@ -1,10 +1,10 @@
 var procede = function(name) {
-  var name = name;
+  var name = name, color;
   $.get(
     '/join', {
       name: name
     }, function(data) {
-      console.log(data);
+      color = data;
     }
   );
   $('#clear-all').click(function(ev){
@@ -15,7 +15,6 @@ var procede = function(name) {
   var context = canvas.getContext('2d');
   var pen_down = false;
   canvas.addEventListener('mousemove', on_mousemove, false);
-  
   function on_mousemove (ev) {
     if (!pen_down) {
       context.beginPath();
@@ -30,7 +29,7 @@ var procede = function(name) {
 
 
 $(function(){
-  smoke.prompt('what\'s my name?',function(e){
+  smoke.prompt('what\'s your name?',function(e){
     if (e){
       procede(e);
     } else {
