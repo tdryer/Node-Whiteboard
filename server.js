@@ -58,13 +58,6 @@ var app = http.createServer(function (req, res) {
       debug && console.log(rooms);
     break;
 
-    case '/users':
-      var room_name = url.parse(req.url).query.toString().replace('room=', '');
-      res.writeHead(200, lib.plain);
-      debug && console.log(JSON.stringify(rooms[room_name]));
-      res.end(JSON.stringify(rooms[room_name]));
-    break;
-
     case '/draw':
       // recieves new line segments from a client
       var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data);
@@ -79,9 +72,9 @@ var app = http.createServer(function (req, res) {
 
     case '/update':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
+      var data = { lines: drawings[room_name], users: rooms[room_name] };
       res.writeHead(200, lib.plain);
-      debug && console.log(drawings[room_name]);
-      res.end(JSON.stringify(drawings[room_name]));
+      res.end(JSON.stringify(data));
     break;
 
     default:

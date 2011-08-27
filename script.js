@@ -7,31 +7,29 @@ function clearCanvas(context, canvas) {
   canvas.width = 1;
   canvas.width = w;
 }
-function getUsers(room) {
-  $.getJSON('/users', {
-    room: room
-  }, function(data) {
-    var i;
-    $('#users').html(room + ': ');
-    for ( i in data ) {
-      $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
+function update_users(room, data) {
+  var i;
+  $('#users').html(room + ': ');
+  for ( i in data ) {
+    $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
+  }
+}
+function update_whiteboard(room, context, canvas, data) {
+  var i, j, x, y;
+  for ( i in data ) {
+    for ( j = 0; j < data[i].length; j += 4) {
+      context.beginPath();
+      context.lineTo(data[i][j], data[i][j+1]);
+      context.lineTo(data[i][j+2], data[i][j+3]);
+      context.stroke();
+      context.closePath();
     }
-  });
+  }
 }
 function update(room, context, canvas) {
-  $.getJSON('/update', {
-    room: room
-  }, function(data) {
-    var i, j, x, y;
-    for ( i in data ) {
-      for ( j = 0; j < data[i].length; j += 4) {
-        context.beginPath();
-        context.lineTo(data[i][j], data[i][j+1]);
-        context.lineTo(data[i][j+2], data[i][j+3]);
-        context.stroke();
-        context.closePath();
-      }
-    }
+  $.getJSON('/update', {room: room}, function(data) {
+    update_users(room, data.users);
+    update_whiteboard(room, context, canvas, data.lines);
   });
 }
 function url_parameter(name) {
@@ -69,7 +67,6 @@ function go(name, room, color) {
     });
   }
   setInterval(function() {
-    getUsers(room);
     send_line_segments();
     update(room, context, canvas);
   }, 1337);
