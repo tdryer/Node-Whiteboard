@@ -1,0 +1,5 @@
+Collaborative HTML5 whiteboard using Node.
+
+To run:
+npm install -d
+node server.js

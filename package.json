@@ -1,0 +1,14 @@
+{
+  "author": "Team Heisenbug",
+  "name": "heisenbug-whiteboard",
+  "description": "Collaborative HTML5 whiteboard using Node.",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nko2/heisenbug.git"
+  },
+  "dependencies": {
+    "nko": "~0.1.0"
+  },
+  "devDependencies": {}
+}
