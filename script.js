@@ -18,16 +18,16 @@ function getUsers(room) {
     }
   });
 }
-function update(room, context) {
-  $.get('/update', {
+function update(room) {
+  var i, j, x, y;
+  $.getJSON('/update', {
     room: room
   }, function(data) {
-    var imageObj = new Image();
-    imageObj.onload = function() {
-      context.drawImage(this, 0, 0);
-    };
-    imageObj.src = urldecode(data);
-    console.log(imageObj.src);
+    for ( i in data ) {
+      for ( j = 0; j < data[i].length; j += 2) {
+        console.log(data[i][j] + ', ' + data[i][j+1]);
+      }
+    }
   });
 }
 function url_parameter(name) {
@@ -41,6 +41,9 @@ function go(name, room, color) {
   setInterval(function() {
     getUsers(room)
   }, 1337);
+  $('#updater').click(function(ev){
+    update(room);
+  });
   // periodically send new lines segments to the server
   setInterval(function() {
     send_line_segments();

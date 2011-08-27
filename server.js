@@ -2,8 +2,7 @@ process.chdir(__dirname);
 
 try {
   var nko = require('nko')('NNlLWzf6EhahtxjJ'); 
-}
-catch (err) {
+} catch (err) {
   console.log('Warning: unable to load \'nko\' module.');
 }
 
@@ -23,22 +22,6 @@ var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
 
-    case '/test':
-      res.writeHead(200, lib.html);
-      res.write('<html><body><form action="/test_post" method="POST">');
-      res.write('<input type="text" name="buenos_dias"/><input type="submit" name="send"/>');
-      res.write('</form></body></html>');
-      res.end()
-    break;
-
-    case '/test_post':
-      res.writeHead(200, lib.plain);
-      lib.post_handler(req, function(post) {
-        res.write('i gotz dis: ' + post.buenos_dias);
-        res.end()
-      });
-    break;
-
     case '/':
       fs.readFile('index.html', function(err, data) {
         res.writeHead(200, lib.html);
@@ -50,7 +33,7 @@ var app = http.createServer(function (req, res) {
       var new_room = lib.genRoom();
       if ( typeof rooms[new_room] === 'undefined' ) {
         rooms[new_room] = [];
-        drawings[new_room] = '';
+        drawings[new_room] = [];
       }
       res.writeHead(200, lib.plain);
       res.end(new_room);
@@ -87,7 +70,7 @@ var app = http.createServer(function (req, res) {
       var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data);
       var room = data.room;
       var lines = data.lines;
-      //TODO
+      drawings[room].push(lines);
       console.log("got " + lines.length + " lines for " + room);
       res.writeHead(200, lib.plain);
       res.end("success");
@@ -96,8 +79,8 @@ var app = http.createServer(function (req, res) {
     case '/update':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, lib.plain);
-      debug && console.log(drawings[room_name][0]);
-      res.end(drawings[room_name]);
+      debug && console.log(drawings[room_name]);
+      res.end(JSON.stringify(drawings[room_name]));
     break;
 
     default:
