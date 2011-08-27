@@ -15,7 +15,7 @@ function update_users(room, data) {
   }
 }
 function update_whiteboard(room, context, canvas, data) {
-  if ( data.length > 0 ) {
+  while ( data.length > 0 ) {
     var obj = data.pop();
     var color = obj.color;
     var lines = obj.lines;
