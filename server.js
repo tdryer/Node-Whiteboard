@@ -36,6 +36,14 @@ var app = http.createServer(function (req, res) {
       var name = url.parse(req.url).query.toString().replace('name=', '');
       users[name].coord.push('asdf');
     break;
+    case '/users':
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      var cur_users = [];
+      for (var i in users) {
+        cur_users.push(users[i].name);
+      }
+      res.end(JSON.stringify(cur_users));
+    break;
     default:
       var file = path.join(process.cwd(), uri);
       path.exists(file, function(exists) {

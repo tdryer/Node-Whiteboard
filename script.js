@@ -6,6 +6,7 @@ var procede = function(name) {
     }, function(data) {
       color = data;
       console.log(color);
+      setInterval(getUsers, 2000);
     }
   );
   $('#clear-all').click(function(ev){
@@ -28,8 +29,12 @@ var procede = function(name) {
     }
   }
 };
-
-
+var getUsers = function() {
+  $.getJSON('/users', function(data){
+    console.log(data)
+    $('#users').html('Connected: ' + data);
+  });
+}
 $(function(){
   smoke.prompt('what\'s your name?',function(e){
     if (e){
