@@ -13,6 +13,9 @@ var procede = function(name) {
     ev.preventDefault();
     console.log('clear-all clicked');
   });
+  
+  var whiteboard_id = 'WHITEBOARD_ID_HERE'; //TODO
+  
   var canvas = $('canvas#canvas');
   var context = canvas[0].getContext('2d');
   var mouse_down = false;
@@ -27,7 +30,7 @@ var procede = function(name) {
       context.lineTo(x, y);
       context.strokeStyle = color;
       context.stroke();
-      console.log(context.toDataURL('image/png'));
+      send_line_segment(x, y, x, y);
     }
   }
   
@@ -38,6 +41,17 @@ var procede = function(name) {
   function on_mousedown (ev) {
     mouse_down = true;
     context.beginPath();
+  }
+  
+  function send_line_segment (startX, startY, endX, endY) {
+    var data = {
+      whiteboard: whiteboard_id,
+      x1: startX,
+      y1: startY,
+      x2: endX,
+      y2: endY
+    };
+    $.post('/draw2', data);
   }
   
 };
