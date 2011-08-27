@@ -19,11 +19,11 @@ function getUsers(room) {
   });
 }
 function update(room, context, canvas) {
-  clearCanvas(context, canvas);
   $.getJSON('/update', {
     room: room
   }, function(data) {
     var i, j, x, y;
+    $('#clear-all').click();
     for ( i in data ) {
       for ( j = 0; j < data[i].length; j += 4) {
         context.beginPath();
