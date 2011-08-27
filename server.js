@@ -22,11 +22,11 @@ var app = http.createServer(function (req, res) {
       });
     break;
 
-    case '/room':
+    case '/get-a-room':
       var new_room = lib.genRoom();
       if ( typeof rooms[new_room] === 'undefined' ) {
         rooms[new_room] = [];
-        drawings[new_room] = [];
+        drawings[new_room] = '';
       }
       res.writeHead(200, lib.plain);
       res.end(new_room);
@@ -62,14 +62,14 @@ var app = http.createServer(function (req, res) {
       var get = url.parse(req.url).query.toString().split('&'),
           data = get[0].replace('data=', ''),
           room = get[1].replace('room=', '');
-      drawings[room].push(data);
+      drawings[room] = data;
     break;
 
     case '/update':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, lib.plain);
       debug && console.log(drawings[room_name][0]);
-      res.end(drawings[room_name].pop());
+      res.end(drawings[room_name]);
     break;
 
     default:

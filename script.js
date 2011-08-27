@@ -27,9 +27,11 @@ function update(room, context) {
       context.drawImage(this, 0, 0);
     };
     imageObj.src = urldecode(data);
+    console.log(imageObj.src);
   });
 }
 function go(name, room, color) {
+  $('input[name="share-url"]').val(window.location.href + 'room/' + room);
   setInterval(function() {
     getUsers(room)
   }, 1337);
@@ -69,7 +71,7 @@ function go(name, room, color) {
 }
 $(function() {
   var room, color;
-  $.get('/room', function(data) {
+  $.get('/get-a-room', function(data) {
     room = data;
     smoke.prompt('We gave you a room: ' + room + '. What\'s your name?', function(name) {
       if (name) {

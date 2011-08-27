@@ -7,3 +7,6 @@ canvas {
 h1 {
   margin-top: 20px;
 }
+input {
+  margin: 10px 0 0 10px;
+}
