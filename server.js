@@ -30,9 +30,11 @@ var app = http.createServer(function (req, res) {
         room: room,
         color: lib.genColor()
       };
+      rooms[room].push(name);
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
-      true && console.log(users);
+      debug && console.log(users);
+      debug && console.log(rooms);
     break;
 
     case '/draw':
@@ -40,12 +42,9 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/users':
-      var i, cur_users = [];
+      var room = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, {'Content-Type': 'text/plain'});
-      for (i in users) {
-        cur_users.push(users[i].name);
-      }
-      res.end(JSON.stringify(cur_users));
+      res.end(JSON.stringify(rooms[room]));
     break;
 
     default:

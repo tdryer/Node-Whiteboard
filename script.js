@@ -1,6 +1,8 @@
-var getUsers = function() {
-  $.getJSON('/users', function(data) {
-    $('#users').html('Connected: ' + data);
+var getUsers = function(room) {
+  $.getJSON('/users', {
+    room: room
+  }, function(data) {
+    $('#users').html('Connected ' + room + ': ' + data);
   });
 }
 var procede = function(name) {
@@ -14,7 +16,7 @@ var procede = function(name) {
           room: room
         }, function(data) {
           color = data;
-          setInterval(getUsers, 2000);
+          setInterval(getUsers(room), 2000);
         }
       );
       $('#clear-all').click(function(ev) {
