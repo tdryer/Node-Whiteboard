@@ -29,7 +29,10 @@ var app = http.createServer(function (req, res) {
         name: name,
         color: lib.genColor()
       };
-      //rooms[room].push(name);
+      if ( typeof rooms[room] === 'undefined' ) {
+        rooms[room] = [];
+      }
+      rooms[room].push(name);
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
       debug && console.log(users);
