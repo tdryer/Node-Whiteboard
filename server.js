@@ -29,7 +29,7 @@ var app = http.createServer(function (req, res) {
         name: name,
         color: lib.genColor()
       };
-      rooms[room].push(name);
+      //rooms[room].push(name);
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
       debug && console.log(users);
@@ -41,7 +41,7 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/users':
-      ///var room = url.parse(req.url).query.toString().replace('room=', '');
+      //var room = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(JSON.stringify(users));
     break;
