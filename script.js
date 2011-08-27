@@ -14,7 +14,7 @@ function update_users(room, data) {
     $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }
 }
-function update_whiteboard(room, context, canvas, data) {
+function update_whiteboard(context, data) {
   if ( data.length > 0 ) {
     var obj = data.pop();
     var color = obj.color;
@@ -33,7 +33,7 @@ function update_whiteboard(room, context, canvas, data) {
 function update(room, context, canvas) {
   $.getJSON('/update', {room: room}, function(data) {
     update_users(room, data.users);
-    update_whiteboard(room, context, canvas, data.lines);
+    update_whiteboard(context, data.lines);
   });
 }
 function url_parameter(name) {
