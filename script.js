@@ -44,16 +44,10 @@ function url_parameter(name) {
 
 function go(name, room, color) {
   setInterval(function() {
-    getUsers(room)
-  }, 1337);
-  $('#updater').click(function(ev){
-    ev.preventDefault();
-    update(room, context);
-  });
-  // periodically send new lines segments to the server
-  setInterval(function() {
+    getUsers(room);
     send_line_segments();
-  }, 1000);
+    update(room, context);
+  }, 1337);
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
   var mouse_down = false;
