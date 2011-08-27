@@ -20,6 +20,7 @@ function update_whiteboard(context, data) {
     var color = obj.color;
     var lines = obj.lines;
     var i, j, x, y;
+    console.log(lines);
     for ( j = 0; j < lines.length; j += 4) {
       context.beginPath();
       context.lineTo(lines[j], lines[j+1]);
