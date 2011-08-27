@@ -16,6 +16,9 @@ function getUsers(room) {
   });
 }
 function go(name, room, color) {
+  setInterval(function() {
+    getUsers(room)
+  }, 1337);
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
   var mouse_down = false;
@@ -30,16 +33,13 @@ function go(name, room, color) {
       context.lineTo(x, y);
       context.strokeStyle = color;
       context.stroke();
-      //send_line_segment(x, y, x, y);
     }
   }
   var on_mouseup = function(ev) {
     mouse_down = false;
-    getUsers(room);
   }
   var on_mousedown = function(ev) {
     mouse_down = true;
-    getUsers(room);
     context.beginPath();
   }
   canvas.bind({
