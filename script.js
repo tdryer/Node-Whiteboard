@@ -13,17 +13,19 @@ var procede = function(name) {
     ev.preventDefault();
     console.log('clear-all clicked');
   });
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext('2d');
+  var canvas = $('canvas#canvas');
+  var context = canvas[0].getContext('2d');
   var pen_down = false;
-  canvas.addEventListener('mousemove', on_mousemove, false);
+  canvas[0].addEventListener('mousemove', on_mousemove, false);
   function on_mousemove (ev) {
+    var x = ev.pageX - canvas.offset().left;
+    var y = ev.pageY - canvas.offset().top;
     if (!pen_down) {
       context.beginPath();
-      context.moveTo(ev.offsetX, ev.offsetY);
+      context.moveTo(x, y);
       pen_down = true;
     } else {
-      context.lineTo(ev.offsetX, ev.offsetY);
+      context.lineTo(x, y);
       context.strokeStyle = color;
       context.stroke();
     }
