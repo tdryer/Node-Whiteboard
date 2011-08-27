@@ -3,6 +3,7 @@ var getUsers = function(room) {
     room: room
   }, function(data) {
     $('#users').html('Connected ' + room + ': ' + data);
+    getUsers(room);
   });
 }
 var procede = function(name) {
@@ -16,7 +17,7 @@ var procede = function(name) {
           room: room
         }, function(data) {
           color = data;
-          setInterval(getUsers(room), 2000);
+          getUsers(room);
         }
       );
       $('#clear-all').click(function(ev) {
