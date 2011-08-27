@@ -4,6 +4,10 @@ var port = process.argv[2] ? process.argv[2] : 80;
 
 var users = [];
 
+function genColor() {
+  return 'green';
+}
+
 // modules
 var http = require('http')
   , url = require('url')
@@ -22,10 +26,11 @@ var app = http.createServer(function (req, res) {
       });
     break;
     case '/join':
-      fs.readFile('index.html', function(err, data) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(data);
-      });
+      var name = url.parse(req.url).query.toString().replace('name=', '');
+      users[name] = {name: name, color: genColor()};
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.end(users[name].color);
+      console.log(users);
     break;
     default:
       var file = path.join(process.cwd(), uri);

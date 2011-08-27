@@ -1,4 +1,12 @@
-$(function(){
+var procede = function(name) {
+  var name = name;
+  $.get(
+    '/join', {
+      name: name
+    }, function(data) {
+      console.log(data);
+    }
+  );
   $('#clear-all').click(function(ev){
     ev.preventDefault();
     console.log('clear-all clicked');
@@ -18,6 +26,17 @@ $(function(){
         context.lineTo(ev.offsetX, ev.offsetY);
         context.stroke();
       }
+    }
+  });
+};
+
+
+$(function(){
+  smoke.prompt('what\'s my name?',function(e){
+    if (e){
+      procede(e);
+    } else {
+      window.location.href = window.location.href;
     }
   });
 });
