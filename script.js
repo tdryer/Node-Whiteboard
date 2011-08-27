@@ -62,10 +62,11 @@ function go(name, room, color) {
     data.room = room;
     data.lines = line_buffer;
     data.name = name;
+    var sent_length = line_buffer.length; // number of entries we try to send
     $.get('/draw', {data: JSON.stringify(data)}, function() {
-      // success, clear the line buffer
-      // TODO: if lines are drawn during the request, they will be lost here
-      line_buffer = [];
+      // success, clear the line buffer of lines which were sent
+      // this prevents lines drawn during the request from being lost
+      line_buffer = line_buffer.slice(sent_length, line_buffer.length);
     });
   }
   setInterval(function() {
