@@ -5,6 +5,7 @@ var procede = function(name) {
       name: name
     }, function(data) {
       color = data;
+      console.log(color);
     }
   );
   $('#clear-all').click(function(ev){
@@ -13,6 +14,7 @@ var procede = function(name) {
   });
   var canvas = document.getElementById('canvas');
   var context = canvas.getContext('2d');
+  context.fillStyle = color;
   var pen_down = false;
   canvas.addEventListener('mousemove', on_mousemove, false);
   function on_mousemove (ev) {
