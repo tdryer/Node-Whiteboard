@@ -85,7 +85,10 @@ function go(name, room, color) {
     'mousedown': on_mousedown,
     'mouseup': on_mouseup
   });
-
+  $('input[name="share-url"]').click(function(ev){
+    ev.preventDefault();
+    $('input[name="share-url"]').select();
+  });
   function buffer_line_segment (x1, y1, x2, y2) {
     // add a line segment to the buffer to be sent to server
     line_buffer = line_buffer.concat(x1, y1, x2, y2);
