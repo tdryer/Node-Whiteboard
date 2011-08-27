@@ -23,12 +23,14 @@ function update(room, context) {
   $.getJSON('/update', {
     room: room
   }, function(data) {
+    console.log(data);
+    //clearCanvas(context, canvas);
     for ( i in data ) {
-      for ( j = 0; j < data[i].length; j += 2) {
+      for ( j = 0; j < data[i].length; j += 4) {
+        context.beginPath();
         context.lineTo(data[i][j], data[i][j+1]);
-        //context.strokeStyle = color;
+        context.lineTo(data[i][j+2], data[i][j+3]);
         context.stroke();
-        console.log(data[i][j] + ', ' + data[i][j+1]);
       }
     }
   });
