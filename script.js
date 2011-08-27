@@ -57,7 +57,7 @@ function go(name, room, color) {
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
   var mouse_down = false;
-  var last_x, last_y; // start of the current line segment
+  var last_x = -1, last_y = -1; // start of the current line segment
   var line_buffer = [] // lines waiting to be sent to server
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
@@ -66,17 +66,21 @@ function go(name, room, color) {
   var on_mousemove = function(ev) {
     var x = ev.pageX - canvas.offset().left;
     var y = ev.pageY - canvas.offset().top;
-    if ( mouse_down ) {
-      context.lineTo(x, y);
-      context.strokeStyle = color;
-      context.stroke();
-      buffer_line_segment(last_x, last_y, x, y);
+    if ( mouse_down) {
+      if (last_x !== -1 && last_y !== -1) {
+        context.lineTo(x, y);
+        context.strokeStyle = color;
+        context.stroke();
+        buffer_line_segment(last_x, last_y, x, y);
+      }
       last_x = x;
       last_y = y;
     }
   }
   var on_mouseup = function(ev) {
     mouse_down = false;
+    last_x = -1;
+    last_y = -1;
   }
   var on_mousedown = function(ev) {
     mouse_down = true;
