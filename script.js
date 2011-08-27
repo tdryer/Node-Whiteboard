@@ -5,13 +5,11 @@ var getUsers = function(room) {
     $('#users').html('Connected ' + room + ': ' + data);
     getUsers(room);
   });
-}
+};
 var procede = function(name) {
-  var name = name, room, color;
+  var color;
   smoke.prompt('What room? If the room doesn\'t exist yet, it will be made.', function(room) {
     if (room) {
-      room = room;
-      console.log(room);
       $.get('/join', {
           name: name,
           room: room
@@ -29,10 +27,6 @@ var procede = function(name) {
       var canvas = $('canvas#canvas');
       var context = canvas[0].getContext('2d');
       var mouse_down = false;
-      canvas.bind({'mousemove': on_mousemove, 
-                   'mousedown': on_mousedown, 
-                   'mouseup': on_mouseup});
-
       function on_mousemove(ev) {
         var x = ev.pageX - canvas.offset().left;
         var y = ev.pageY - canvas.offset().top;
@@ -52,6 +46,11 @@ var procede = function(name) {
         mouse_down = true;
         context.beginPath();
       }
+      canvas.bind({
+        'mousemove': on_mousemove,
+        'mousedown': on_mousedown,
+        'mouseup': on_mouseup
+      });
       
       function send_line_segment(startX, startY, endX, endY) {
         var data = {
