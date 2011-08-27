@@ -22,14 +22,17 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/join':
-      var name = url.parse(req.url).query.toString().replace('name=', '');
+      var get = url.parse(req.url).query.toString().split('&'),
+          name = get[0].replace('name=', ''),
+          room = get[1].replace('room=', '');
       users[name] = {
         name: name,
+        room: room,
         color: lib.genColor()
       };
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
-      debug && console.log(users);
+      true && console.log(users);
     break;
 
     case '/draw':
