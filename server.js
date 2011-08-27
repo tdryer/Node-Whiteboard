@@ -5,16 +5,23 @@ var port = process.argv[2] ? process.argv[2] : 80;
 // modules
 var http = require('http')
   , url = require('url')
-  , nko = require('nko')('NNlLWzf6EhahtxjJ');
+  , fs = require('fs');
+  //, nko = require('nko')('NNlLWzf6EhahtxjJ');
 
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   
   switch (uri) {
-  
+    case '/':
+      fs.readFile('index.html', function(err, data) {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(data);
+      });
+    break;
     default:
-      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.writeHead(200, {'Content-Type': 'text/html'});
       res.end('Hello, World');
+    break;
   }
 
 });
