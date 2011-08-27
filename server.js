@@ -53,7 +53,7 @@ var app = http.createServer(function (req, res) {
     case '/users':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, lib.plain);
-      console.log(JSON.stringify(rooms[room_name]));
+      debug && console.log(JSON.stringify(rooms[room_name]));
       res.end(JSON.stringify(rooms[room_name]));
     break;
 

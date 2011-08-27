@@ -8,7 +8,8 @@ module.exports = {
 };
 
 module.exports.genColor = function() {
-  return '#' + Math.floor( Math.random() * 16777215 ).toString(16);
+  var h = (~~(Math.random() * (1 << 24))).toString(16);
+  return '#000000'.substr(0, 7 - h.length) + h;
 };
 
 module.exports.genRoom = function(length) {
