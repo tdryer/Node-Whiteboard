@@ -74,9 +74,13 @@ var app = http.createServer(function (req, res) {
 app.listen(port, function() {
   console.log('Ready');
   // if run as root, downgrade to the owner of this file
-  if (process.getuid() === 0)
-  require('fs').stat(__filename, function(err, stats) {
-    if (err) return console.log(err)
-    process.setuid(stats.uid);
-  });
+  try {
+    if (process.getuid() === 0)
+    fs.stat(__filename, function(err, stats) {
+      if (err) return console.log(err)
+      process.setuid(stats.uid);
+    });
+  } catch (err) {
+    console.log('poor windows');
+  }
 });

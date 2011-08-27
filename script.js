@@ -27,6 +27,7 @@ var procede = function(name) {
       context.lineTo(x, y);
       context.strokeStyle = color;
       context.stroke();
+      console.log(context.toDataURL('image/png'));
     }
   }
   
