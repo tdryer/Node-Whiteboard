@@ -69,7 +69,7 @@ function go(name, room, color) {
   setInterval(function() {
     send_line_segments();
     update(room, context, canvas);
-  }, 1337);
+  }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
     clearCanvas(context, canvas.get(0));
