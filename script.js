@@ -19,8 +19,6 @@ function update_whiteboard(room, context, canvas, data) {
     var obj = data.pop();
     var color = obj.color;
     var lines = obj.lines;
-    console.log(color);
-    console.log(lines);
     var i, j, x, y;
     for ( j = 0; j < lines.length; j += 4) {
       context.beginPath();
