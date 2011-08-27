@@ -23,6 +23,22 @@ var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
 
+    case '/test':
+      res.writeHead(200, lib.html);
+      res.write('<html><body><form action="/test_post" method="POST">');
+      res.write('<input type="text" name="buenos_dias"/><input type="submit" name="send"/>');
+      res.write('</form></body></html>');
+      res.end()
+    break;
+
+    case '/test_post':
+      res.writeHead(200, lib.plain);
+      lib.post_handler(req, function(post) {
+        res.write('i gotz dis: ' + post.buenos_dias);
+        res.end()
+      });
+    break;
+
     case '/':
       fs.readFile('index.html', function(err, data) {
         res.writeHead(200, lib.html);
