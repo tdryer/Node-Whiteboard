@@ -8,10 +8,10 @@ function clearCanvas(context, canvas) {
   canvas.width = w;
 }
 function getUsers(room) {
-  var i;
   $.getJSON('/users', {
     room: room
   }, function(data) {
+    var i;
     $('#users').html(room + ': ');
     for ( i in data ) {
       $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
@@ -19,12 +19,11 @@ function getUsers(room) {
   });
 }
 function update(room, context, canvas) {
-  var i, j, x, y;
+  clearCanvas(context, canvas);
   $.getJSON('/update', {
     room: room
   }, function(data) {
-    console.log(data);
-    clearCanvas(context, canvas);
+    var i, j, x, y;
     for ( i in data ) {
       for ( j = 0; j < data[i].length; j += 4) {
         context.beginPath();
@@ -37,7 +36,6 @@ function update(room, context, canvas) {
   });
 }
 function url_parameter(name) {
-  // from here: http://snipplr.com/view/26662/get-url-parameters-with-jquery--improved/
   var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (!results) { return 0; }
   return results[1] || 0;
@@ -51,14 +49,30 @@ function canvas_mouse_pos(event, canvas) {
 function go(name, room, color) {
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
+  var mouse_down = false;
+  var last_x = -1, last_y = -1; // start of the current line segment
+  var line_buffer = []; // lines waiting to be sent to server
+  function send_line_segments () {
+    // send new line segments to the server and empty the buffer
+    // do nothing if there are no lines to send
+    if (line_buffer.length === 0) {
+      return;
+    }
+    var data = {};
+    data.room = room;
+    data.lines = line_buffer;
+    data.name = name;
+    $.get('/draw', {data: JSON.stringify(data)}, function() {
+      // success, clear the line buffer
+      // TODO: if lines are drawn during the request, they will be lost here
+      line_buffer = [];
+    });
+  }
   setInterval(function() {
     getUsers(room);
     send_line_segments();
     update(room, context, canvas);
   }, 1337);
-  var mouse_down = false;
-  var last_x = -1, last_y = -1; // start of the current line segment
-  var line_buffer = []; // lines waiting to be sent to server
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
     clearCanvas(context, canvas.get(0));
@@ -72,7 +86,7 @@ function go(name, room, color) {
         context.lineTo(p.x, p.y);
         context.strokeStyle = color;
         context.stroke();
-        buffer_line_segment(last_x, last_y, p.x, p.y);
+        line_buffer = line_buffer.concat(last_x, last_y, p.x, p.y);
         context.closePath();
       }
       last_x = p.x;
@@ -99,28 +113,6 @@ function go(name, room, color) {
     ev.preventDefault();
     $('input[name="share-url"]').select();
   });
-  function buffer_line_segment (x1, y1, x2, y2) {
-    // add a line segment to the buffer to be sent to server
-    line_buffer = line_buffer.concat(x1, y1, x2, y2);
-  }
-
-  function send_line_segments () {
-    // send new line segments to the server and empty the buffer
-    // do nothing if there are no lines to send
-    if (line_buffer.length === 0) {
-      return;
-    }
-    var data = {};
-    data.room = room;
-    data.lines = line_buffer;
-    data.name = name;
-    $.get('/draw', {data: JSON.stringify(data)}, function() {
-      // success, clear the line buffer
-      // TODO: if lines are drawn during the request, they will be lost here
-      line_buffer = [];
-    });
-  }
-
 }
 
 $(function() {
