@@ -3,7 +3,6 @@ var getUsers = function(room) {
     room: room
   }, function(data) {
     $('#users').html('Connected ' + room + ': ' + data);
-    getUsers(room);
   });
 };
 var procede = function(name) {
@@ -22,7 +21,6 @@ var procede = function(name) {
         ev.preventDefault();
         console.log('clear-all clicked');
       });
-      var whiteboard_id = 'WHITEBOARD_ID_HERE'; //TODO
 
       var canvas = $('canvas#canvas');
       var context = canvas[0].getContext('2d');
@@ -40,10 +38,12 @@ var procede = function(name) {
 
       function on_mouseup(ev) {
         mouse_down = false;
+        getUsers(room);
       }
       
       function on_mousedown(ev) {
         mouse_down = true;
+        getUsers(room);
         context.beginPath();
       }
       canvas.bind({
@@ -54,13 +54,14 @@ var procede = function(name) {
       
       function send_line_segment(startX, startY, endX, endY) {
         var data = {
-          whiteboard: whiteboard_id,
+          room: room,
+          color: color,
           x1: startX,
           y1: startY,
           x2: endX,
           y2: endY
         };
-        $.post('/draw2', data);
+        $.get('/draw', data);
       }
     } else {
       window.location.href = window.location.href;

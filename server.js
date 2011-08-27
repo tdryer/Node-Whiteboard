@@ -40,7 +40,7 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/draw':
-      var drawer = url.parse(req.url).query.toString().replace('name=', '');
+      console.log(url.parse(req.url).query);
     break;
 
     case '/users':
