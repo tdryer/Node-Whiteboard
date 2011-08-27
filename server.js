@@ -1,4 +1,5 @@
 process.chdir(__dirname);
+// var nko = require('nko')('NNlLWzf6EhahtxjJ'); // david can't handle this
 var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     users = [],
@@ -7,8 +8,7 @@ var debug = process.argv[3] ? true : false,
     http = require('http'),
     url = require('url'),
     path = require('path'),
-    fs = require('fs'),
-    nko = 'hi'; // require('nko')('NNlLWzf6EhahtxjJ');
+    fs = require('fs');
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
@@ -68,9 +68,9 @@ var app = http.createServer(function (req, res) {
           extension = file.lastIndexOf('.') < 0 ? '' : file.substring(file.lastIndexOf('.'));
           fs.readFile(file, function(err, data) {
             if ( extension === '.css' ) {
-              res.writeHead(200, {'Content-Type': 'text/css'});
+              res.writeHead(200, lib.css);
             } else if (extension === '.js') {
-              res.writeHead(200, {'Content-Type': 'application/javascript'});
+              res.writeHead(200, lib.js);
             }
             res.end(data);
           });
@@ -93,6 +93,6 @@ app.listen(port, function() {
       });
     }
   } catch (err) {
-    console.log('poor windows');
+    // poor windows
   }
 });

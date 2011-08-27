@@ -37,6 +37,9 @@ function go(name, room, color) {
   }
   var on_mouseup = function(ev) {
     mouse_down = false;
+    $.post('/draw', {
+      data: canvas.get(0).toDataURL()
+    });
   }
   var on_mousedown = function(ev) {
     mouse_down = true;
