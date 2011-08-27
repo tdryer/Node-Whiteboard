@@ -1,5 +1,12 @@
 process.chdir(__dirname);
-// var nko = require('nko')('NNlLWzf6EhahtxjJ'); // david can't handle this
+
+try {
+  var nko = require('nko')('NNlLWzf6EhahtxjJ'); 
+}
+catch (err) {
+  console.log('Warning: unable to load \'nko\' module.');
+}
+
 var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     users = [],
@@ -11,6 +18,7 @@ var debug = process.argv[3] ? true : false,
     path = require('path'),
     qs = require('querystring'),
     fs = require('fs');
+
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
