@@ -4,10 +4,12 @@ var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     users = [],
     rooms = [],
+    drawings = [],
     lib = require('./helpers'),
     http = require('http'),
     url = require('url'),
     path = require('path'),
+    qs = require('querystring'),
     fs = require('fs');
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
@@ -24,8 +26,7 @@ var app = http.createServer(function (req, res) {
       var new_room = lib.genRoom();
       if ( typeof rooms[new_room] === 'undefined' ) {
         rooms[new_room] = [];
-      } else {
-        
+        drawings[new_room] = [];
       }
       res.writeHead(200, lib.plain);
       res.end(new_room);
@@ -58,7 +59,17 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/draw':
-      console.log(url.parse(req.url).query);
+      var get = url.parse(req.url).query.toString().split('&'),
+          data = get[0].replace('data=', ''),
+          room = get[1].replace('room=', '');
+      drawings[room].push(data);
+    break;
+
+    case '/update':
+      var room_name = url.parse(req.url).query.toString().replace('room=', '');
+      res.writeHead(200, lib.plain);
+      debug && console.log(drawings[room_name][0]);
+      res.end(drawings[room_name].pop());
     break;
 
     default:
@@ -83,7 +94,7 @@ var app = http.createServer(function (req, res) {
 app.listen(port, function() {
   console.log('Server listening on port ' + port + '.');
   try {
-    // if run as root, downgrade to the owner of this file
+    // if running as root, downgrade to the owner of this file
     if (process.getuid() === 0) {
       fs.stat(__filename, function(err, stats) {
         if (err) {
