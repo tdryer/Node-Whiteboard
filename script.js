@@ -30,14 +30,21 @@ function update(room, context) {
     console.log(imageObj.src);
   });
 }
+
 function go(name, room, color) {
   $('input[name="share-url"]').val(window.location.href + 'room/' + room);
   setInterval(function() {
     getUsers(room)
   }, 1337);
+  // periodically send new lines segments to the server
+  setInterval(function() {
+    send_line_segments();
+  }, 1000);
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
   var mouse_down = false;
+  var last_x, last_y; // start of the current line segment
+  var line_buffer = [] // lines waiting to be sent to server
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
     clearCanvas(context, canvas.get(0));
@@ -49,15 +56,13 @@ function go(name, room, color) {
       context.lineTo(x, y);
       context.strokeStyle = color;
       context.stroke();
+      buffer_line_segment(last_x, last_y, x, y);
+      last_x = x;
+      last_y = y;
     }
   }
   var on_mouseup = function(ev) {
     mouse_down = false;
-    $.get('/draw', {
-      data: canvas.get(0).toDataURL('image/png'),
-      room: room
-    });
-    update(room, context);
   }
   var on_mousedown = function(ev) {
     mouse_down = true;
@@ -68,7 +73,30 @@ function go(name, room, color) {
     'mousedown': on_mousedown,
     'mouseup': on_mouseup
   });
+
+  function buffer_line_segment (x1, y1, x2, y2) {
+    // add a line segment to the buffer to be sent to server
+    line_buffer = line_buffer.concat(x1, y1, x2, y2);
+  }
+
+  function send_line_segments () {
+    // send new line segments to the server and empty the buffer
+    // do nothing if there are no lines to send
+    if (line_buffer.length === 0) {
+      return;
+    }
+    var data = {};
+    data.room = room;
+    data.lines = line_buffer;
+    $.get('/draw', {data: JSON.stringify(data)}, function() {
+      // success, clear the line buffer
+      // TODO: if lines are drawn during the request, they will be lost here
+      line_buffer = [];
+    });
+  }
+
 }
+
 $(function() {
   var room, color;
   $.get('/get-a-room', function(data) {
