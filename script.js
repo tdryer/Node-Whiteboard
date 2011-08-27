@@ -9,7 +9,7 @@ function clearCanvas(context, canvas) {
 }
 function update_users(room, data) {
   var i;
-  $('#users').html(room + ': ');
+  $('#users').html('<b>' + room + '</b>: ');
   for ( i in data ) {
     $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }
