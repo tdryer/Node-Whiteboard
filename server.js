@@ -67,8 +67,12 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/draw':
-      //TODO: do something with the line segments
-      console.log('got some line segments');
+      // recieves new line segments from a client
+      var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data);
+      var room = data.room;
+      var lines = data.lines;
+      //TODO
+      console.log("got " + lines.length + " lines for " + room);
       res.writeHead(200, lib.plain);
       res.end("success");
     break;
