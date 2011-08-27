@@ -5,7 +5,7 @@ process.chdir(__dirname);
 var debug = process.argv[3] ? process.argv[3] : false;
 var port = process.argv[2] ? process.argv[2] : 80;
 
-var users = [];
+var users = [], rooms = [];
 
 function genColor() {
   return 'green';
@@ -30,19 +30,19 @@ var app = http.createServer(function (req, res) {
     break;
     case '/join':
       var name = url.parse(req.url).query.toString().replace('name=', '');
-      users[name] = {name: name, color: genColor(), coord: []};
+      users[name] = {name: name, color: genColor()};
       res.writeHead(200, {'Content-Type': 'text/plain'});
       res.end(users[name].color);
       console.log(users);
     break;
     case '/draw':
-      var name = url.parse(req.url).query.toString().replace('name=', '');
-      users[name].coord.push('asdf');
+      var drawer = url.parse(req.url).query.toString().replace('name=', '');
     break;
     case '/users':
+      var i;
       res.writeHead(200, {'Content-Type': 'text/plain'});
       var cur_users = [];
-      for (var i in users) {
+      for (i in users) {
         cur_users.push(users[i].name);
       }
       res.end(JSON.stringify(cur_users));
@@ -67,19 +67,18 @@ var app = http.createServer(function (req, res) {
 
 });
 
-//app.listen(port, function() {
-//  console.log('Server listening on port ' + port + '.');
-//});
-
 app.listen(port, function() {
-  console.log('Ready');
+  console.log('Server listening on port ' + port + '.');
   // if run as root, downgrade to the owner of this file
   try {
-    if (process.getuid() === 0)
-    fs.stat(__filename, function(err, stats) {
-      if (err) return console.log(err)
-      process.setuid(stats.uid);
-    });
+    if (process.getuid() === 0) {
+      fs.stat(__filename, function(err, stats) {
+        if (err) {
+          return console.log(err);
+        }
+        process.setuid(stats.uid);
+      });
+    }
   } catch (err) {
     console.log('poor windows');
   }

@@ -62,9 +62,9 @@ var getUsers = function() {
   });
 }
 $(function(){
-  smoke.prompt('what\'s your name?',function(e){
-    if (e){
-      procede(e);
+  smoke.prompt('what\'s your name?',function(name, room){
+    if (name){
+      procede(name);
     } else {
       window.location.href = window.location.href;
     }
