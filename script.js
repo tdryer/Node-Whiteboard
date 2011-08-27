@@ -1,3 +1,9 @@
+function clearCanvas(context, canvas) {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  var w = canvas.width;
+  canvas.width = 1;
+  canvas.width = w;
+}
 function getUsers(room) {
   var i;
   $.getJSON('/users', {
@@ -7,15 +13,42 @@ function getUsers(room) {
     for ( i in data ) {
       $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
     }
-    return true;
   });
 }
 function go(name, room, color) {
-  setInterval(getUsers(room), 1337);
-}
-$(function() {
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
+  var mouse_down = false;
+  $('#clear-all').click(function(ev) {
+    ev.preventDefault();
+    clearCanvas(context, canvas.get(0));
+  });
+  var on_mousemove = function(ev) {
+    var x = ev.pageX - canvas.offset().left;
+    var y = ev.pageY - canvas.offset().top;
+    if ( mouse_down ) {
+      context.lineTo(x, y);
+      context.strokeStyle = color;
+      context.stroke();
+      //send_line_segment(x, y, x, y);
+    }
+  }
+  var on_mouseup = function(ev) {
+    mouse_down = false;
+    getUsers(room);
+  }
+  var on_mousedown = function(ev) {
+    mouse_down = true;
+    getUsers(room);
+    context.beginPath();
+  }
+  canvas.bind({
+    'mousemove': on_mousemove,
+    'mousedown': on_mousedown,
+    'mouseup': on_mouseup
+  });
+}
+$(function() {
   var room, color;
   $.get('/room', function(data) {
     room = data;
