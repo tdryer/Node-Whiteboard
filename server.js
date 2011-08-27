@@ -27,7 +27,6 @@ var app = http.createServer(function (req, res) {
           room = get[1].replace('room=', '');
       users[name] = {
         name: name,
-        room: room,
         color: lib.genColor()
       };
       rooms[room].push(name);
@@ -42,9 +41,9 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/users':
-      var room = url.parse(req.url).query.toString().replace('room=', '');
+      ///var room = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end(JSON.stringify(rooms[room]));
+      res.end(JSON.stringify(users));
     break;
 
     default:
