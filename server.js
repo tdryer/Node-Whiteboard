@@ -1,3 +1,6 @@
+// boss
+process.chdir(__dirname);
+
 // arguments
 var debug = process.argv[3] ? process.argv[3] : false;
 var port = process.argv[2] ? process.argv[2] : 80;
