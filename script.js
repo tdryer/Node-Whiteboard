@@ -23,7 +23,6 @@ function update(room, context, canvas) {
     room: room
   }, function(data) {
     var i, j, x, y;
-    $('#clear-all').click();
     for ( i in data ) {
       for ( j = 0; j < data[i].length; j += 4) {
         context.beginPath();
