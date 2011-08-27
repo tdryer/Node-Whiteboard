@@ -70,8 +70,9 @@ var app = http.createServer(function (req, res) {
       var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data);
       var room = data.room;
       var lines = data.lines;
+      var name = data.name;
       drawings[room].push(lines);
-      console.log("got " + lines.length + " lines for " + room);
+      console.log("got " + lines.length / 4 + " lines for " + room + ' from ' + name);
       res.writeHead(200, lib.plain);
       res.end("success");
     break;

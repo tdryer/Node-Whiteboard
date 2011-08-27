@@ -103,6 +103,7 @@ function go(name, room, color) {
     var data = {};
     data.room = room;
     data.lines = line_buffer;
+    data.name = name;
     $.get('/draw', {data: JSON.stringify(data)}, function() {
       // success, clear the line buffer
       // TODO: if lines are drawn during the request, they will be lost here
