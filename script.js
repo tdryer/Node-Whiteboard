@@ -1,21 +1,30 @@
+var getUsers = function() {
+  $.getJSON('/users', function(data) {
+    $('#users').html('Connected: ' + data);
+  });
+}
 var procede = function(name) {
-  var name = name, color;
-  $.get(
-    '/join', {
+  var name = name, room, color;
+  smoke.prompt('What room? If the room doesn\'t exist yet, it will be made.', function(room) {
+    if (room) {
+      room = room;
+    } else {
+      window.location.href = window.location.href;
+    }
+  });
+  $.get('/join', {
       name: name
     }, function(data) {
       color = data;
-      console.log(color);
       setInterval(getUsers, 2000);
     }
   );
-  $('#clear-all').click(function(ev){
+  $('#clear-all').click(function(ev) {
     ev.preventDefault();
     console.log('clear-all clicked');
   });
-  
   var whiteboard_id = 'WHITEBOARD_ID_HERE'; //TODO
-  
+
   var canvas = $('canvas#canvas');
   var context = canvas[0].getContext('2d');
   var mouse_down = false;
@@ -23,7 +32,7 @@ var procede = function(name) {
                'mousedown': on_mousedown, 
                'mouseup': on_mouseup});
 
-  function on_mousemove (ev) {
+  function on_mousemove(ev) {
     var x = ev.pageX - canvas.offset().left;
     var y = ev.pageY - canvas.offset().top;
     if (mouse_down) {
@@ -33,17 +42,17 @@ var procede = function(name) {
       send_line_segment(x, y, x, y);
     }
   }
-  
-  function on_mouseup (ev) {
+
+  function on_mouseup(ev) {
     mouse_down = false;
   }
   
-  function on_mousedown (ev) {
+  function on_mousedown(ev) {
     mouse_down = true;
     context.beginPath();
   }
   
-  function send_line_segment (startX, startY, endX, endY) {
+  function send_line_segment(startX, startY, endX, endY) {
     var data = {
       whiteboard: whiteboard_id,
       x1: startX,
@@ -53,17 +62,10 @@ var procede = function(name) {
     };
     $.post('/draw2', data);
   }
-  
 };
-var getUsers = function() {
-  $.getJSON('/users', function(data){
-    console.log(data)
-    $('#users').html('Connected: ' + data);
-  });
-}
-$(function(){
-  smoke.prompt('what\'s your name?',function(name, room){
-    if (name){
+$(function() {
+  smoke.prompt('What\'s your name?', function(name) {
+    if (name) {
       procede(name);
     } else {
       window.location.href = window.location.href;
