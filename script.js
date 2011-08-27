@@ -15,12 +15,18 @@ function update_users(room, data) {
   }
 }
 function update_whiteboard(room, context, canvas, data) {
-  var i, j, x, y;
-  for ( i in data ) {
-    for ( j = 0; j < data[i].length; j += 4) {
+  if ( data.length > 0 ) {
+    var obj = data.pop();
+    var color = obj.color;
+    var lines = obj.lines;
+    console.log(color);
+    console.log(lines);
+    var i, j, x, y;
+    for ( j = 0; j < lines.length; j += 4) {
       context.beginPath();
-      context.lineTo(data[i][j], data[i][j+1]);
-      context.lineTo(data[i][j+2], data[i][j+3]);
+      context.lineTo(lines[j], lines[j+1]);
+      context.lineTo(lines[j+2], lines[j+3]);
+      context.strokeStyle = color;
       context.stroke();
       context.closePath();
     }

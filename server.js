@@ -64,7 +64,7 @@ var app = http.createServer(function (req, res) {
       var room = data.room;
       var lines = data.lines;
       var name = data.name;
-      drawings[room].push(lines);
+      drawings[room].push({lines: lines, color: users[name].color});
       console.log("got " + lines.length / 4 + " lines for " + room + ' from ' + name);
       res.writeHead(200, lib.plain);
       res.end("success");
