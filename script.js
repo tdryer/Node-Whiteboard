@@ -24,13 +24,14 @@ function update(room, context) {
     room: room
   }, function(data) {
     console.log(data);
-    //clearCanvas(context, canvas);
+    clearCanvas(context, canvas);
     for ( i in data ) {
       for ( j = 0; j < data[i].length; j += 4) {
         context.beginPath();
         context.lineTo(data[i][j], data[i][j+1]);
         context.lineTo(data[i][j+2], data[i][j+3]);
         context.stroke();
+        context.closePath();
       }
     }
   });
@@ -40,6 +41,11 @@ function url_parameter(name) {
   var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (!results) { return 0; }
   return results[1] || 0;
+}
+function canvas_mouse_pos(event, canvas) {
+  // for a mouse event, return the mouse position relative to the canvas
+  return { x: event.pageX - canvas.offset().left, 
+           y: event.pageY - canvas.offset().top };
 }
 
 function go(name, room, color) {
@@ -58,17 +64,19 @@ function go(name, room, color) {
     clearCanvas(context, canvas.get(0));
   });
   var on_mousemove = function(ev) {
-    var x = ev.pageX - canvas.offset().left;
-    var y = ev.pageY - canvas.offset().top;
+    var p = canvas_mouse_pos(ev, canvas);
     if ( mouse_down) {
       if (last_x !== -1 && last_y !== -1) {
-        context.lineTo(x, y);
+        context.beginPath();
+        context.moveTo(last_x, last_y);
+        context.lineTo(p.x, p.y);
         context.strokeStyle = color;
         context.stroke();
-        buffer_line_segment(last_x, last_y, x, y);
+        buffer_line_segment(last_x, last_y, p.x, p.y);
+        context.closePath();
       }
-      last_x = x;
-      last_y = y;
+      last_x = p.x;
+      last_y = p.y;
     }
   }
   var on_mouseup = function(ev) {
@@ -78,7 +86,9 @@ function go(name, room, color) {
   }
   var on_mousedown = function(ev) {
     mouse_down = true;
-    context.beginPath();
+    var p = canvas_mouse_pos(ev, canvas);
+    last_x = p.x;
+    last_y = p.y;
   }
   canvas.bind({
     'mousemove': on_mousemove,
