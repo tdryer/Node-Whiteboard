@@ -59,10 +59,10 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/draw':
-      var get = url.parse(req.url).query.toString().split('&'),
-          data = get[0].replace('data=', ''),
-          room = get[1].replace('room=', '');
-      drawings[room] = data;
+      //TODO: do something with the line segments
+      console.log('got some line segments');
+      res.writeHead(200, lib.plain);
+      res.end("success");
     break;
 
     case '/update':
