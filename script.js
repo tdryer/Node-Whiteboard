@@ -18,7 +18,7 @@ function getUsers(room) {
     }
   });
 }
-function update(room, context) {
+function update(room, context, canvas) {
   var i, j, x, y;
   $.getJSON('/update', {
     room: room
@@ -49,16 +49,16 @@ function canvas_mouse_pos(event, canvas) {
 }
 
 function go(name, room, color) {
+  var canvas = $('#canvas');
+  var context = canvas.get(0).getContext('2d');
   setInterval(function() {
     getUsers(room);
     send_line_segments();
-    update(room, context);
+    update(room, context, canvas);
   }, 1337);
-  var canvas = $('#canvas');
-  var context = canvas.get(0).getContext('2d');
   var mouse_down = false;
   var last_x = -1, last_y = -1; // start of the current line segment
-  var line_buffer = [] // lines waiting to be sent to server
+  var line_buffer = []; // lines waiting to be sent to server
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
     clearCanvas(context, canvas.get(0));
@@ -78,18 +78,18 @@ function go(name, room, color) {
       last_x = p.x;
       last_y = p.y;
     }
-  }
+  };
   var on_mouseup = function(ev) {
     mouse_down = false;
     last_x = -1;
     last_y = -1;
-  }
+  };
   var on_mousedown = function(ev) {
     mouse_down = true;
     var p = canvas_mouse_pos(ev, canvas);
     last_x = p.x;
     last_y = p.y;
-  }
+  };
   canvas.bind({
     'mousemove': on_mousemove,
     'mousedown': on_mousedown,
@@ -140,7 +140,7 @@ $(function() {
     });
   }
   
-  function show_prompt (prompt) {
+  function show_prompt(prompt) {
     smoke.prompt(prompt, function(name) {
       if (name) {
         $.get('/join', {
@@ -154,5 +154,5 @@ $(function() {
         location.reload();
       }
     });
-  };
+  }
 });
