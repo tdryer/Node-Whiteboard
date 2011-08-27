@@ -44,9 +44,9 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/users':
-      //var room = url.parse(req.url).query.toString().replace('room=', '');
+      var room = url.parse(req.url).query.toString().replace('room=', '');
       res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end(JSON.stringify(users));
+      res.end(JSON.stringify(rooms[room]));
     break;
 
     default:
