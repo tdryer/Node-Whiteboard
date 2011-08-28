@@ -93,12 +93,16 @@ function go(name, room, color, id) {
   var on_mousemove = function(ev) {
     var p = canvas_mouse_pos(ev, canvas);
     if ( mouse_down) {
-      if (last_x !== -1 && last_y !== -1 && ink_level < 100) {
-        draw_lines(context, [last_x, last_y, p.x, p.y], color);
-        line_buffer = line_buffer.concat(last_x, last_y, p.x, p.y);
-      }
-      last_x = p.x;
-      last_y = p.y;
+      // only draw a line if its length is over a threshhold
+      var dist = Math.sqrt(Math.pow(last_x - p.x, 2) + Math.pow(last_y - p.y, 2));
+      if ( dist > 5 ) { // TODO: this number is tuneable
+        if (last_x !== -1 && last_y !== -1 && ink_level < 100) {
+          draw_lines(context, [last_x, last_y, p.x, p.y], color);
+          line_buffer = line_buffer.concat(last_x, last_y, p.x, p.y);
+        }
+        last_x = p.x;
+        last_y = p.y;
+      }else { console.log('saved a line'); }
     }
   };
   var on_mouseup = function(ev) {
