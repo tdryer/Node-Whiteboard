@@ -1,5 +1,3 @@
-var qs = require('querystring');
-
 module.exports = {
   plain: {
     'Content-Type': 'text/plain'
