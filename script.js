@@ -21,7 +21,7 @@ function update_users(room, data) {
   }
 }
 function draw_lines(context, lines, color) {
-  // add lines to the context, for lines = [x1, y1, x2, y2, ...]
+  var j;
   for ( j = 0; j < lines.length; j += 4) {
       context.beginPath();
       context.lineTo(lines[j], lines[j+1]);
@@ -41,18 +41,34 @@ function canvas_mouse_pos(event, canvas) {
   return { x: event.pageX - canvas.offset().left, 
            y: event.pageY - canvas.offset().top };
 }
-
+function update(room, context, canvas, id) {
+  $.getJSON('/update', {id: id}, function(data) {
+    // data is a list of update objects
+    if ( data === 'clear' ) {
+      console.log('doing clear');
+      canvas.get(0).width = canvas.get(0).width;
+    } else {
+      var i;
+      for (i in data) {
+        if (data[i].type === "lines") {
+          draw_lines(context, data[i].lines, data[i].color);
+        } else if (data[i].type === "users") {
+          update_users(room, data[i].users);
+        }
+      }
+    }
+  });
+}
 function go(name, room, color, id) {
-  var id = id; // this client's unique id
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
-  canvas.onselectstart = function () { return false; } // ie
-  canvas.onmousedown = function () { return false; } // mozilla
+  canvas.onselectstart = function () { return false; }; // ie
+  canvas.onmousedown = function () { return false; }; // mozilla
   var mouse_down = false;
   var last_x = -1, last_y = -1; // start of the current line segment
   var line_buffer = []; // lines waiting to be sent to server
   var ink_level = 0; // between 0-100
-  function send_line_segments () {
+  function send_line_segments() {
     // send new line segments to the server and empty the buffer
     // do nothing if there are no lines to send
     if (line_buffer.length === 0) {
@@ -65,21 +81,9 @@ function go(name, room, color, id) {
       line_buffer = line_buffer.slice(sent_length, line_buffer.length);
     });
   }
-  function update(room, context, canvas) {
-  $.getJSON('/update', {id: id}, function(data) {
-    // data is a list of update objects
-    for (i in data) {
-      if (data[i].type === "lines") {
-        draw_lines(context, data[i].lines, data[i].color);
-      } else if (data[i].type === "users") {
-        update_users(room, data[i].users);
-      }
-    }
-  });
-}
   setInterval(function() {
     send_line_segments();
-    update(room, context, canvas);
+    update(room, context, canvas, id);
     if (ink_level >= 100) {
       $('canvas').css('cursor', 'not-allowed');
     } else {
@@ -88,11 +92,10 @@ function go(name, room, color, id) {
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
-    //TODO: update this for post-refactor
-    // tell server to clear this whiteboard
     $.get('/clear', {room: room}, function(data) {
-      // once the request completes, clear the local canvas
-      clearCanvas(context, canvas.get(0));
+      if ( data ) {
+        canvas.get(0).width = canvas.get(0).width;
+      }
     });
   });
   var on_mousemove = function(ev) {
@@ -157,15 +160,6 @@ $(function() {
     room = room_parameter;
     prompt = 'Welcome to <img src="/icon.png" /><span class="title">Node Whiteboard</span>, a realtime collaborative drawing tool.<br><br>We\'ve got a room (' +  room + ') ready for you,<br>to get started, simply enter a nickname:';
     $('input[name="share-url"]').val(window.location.href);
-    show_prompt(prompt);
-  } else {
-    $.get('/get-a-room', function(data) {
-      room = data;
-      window.location.href = window.location.href + '?room=' + room;
-    });
-  }
-  
-  function show_prompt(prompt) {
     var new_id = get_random_id();
     smoke.prompt(prompt, function(name) {
       if (name) {
@@ -181,6 +175,11 @@ $(function() {
       } else {
         location.reload();
       }
+    });
+  } else {
+    $.get('/get-a-room', function(data) {
+      room = data;
+      window.location.href = window.location.href + '?room=' + room;
     });
   }
 });
