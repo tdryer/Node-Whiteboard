@@ -94,14 +94,8 @@ function go(name, room, color, id) {
     var p = canvas_mouse_pos(ev, canvas);
     if ( mouse_down) {
       if (last_x !== -1 && last_y !== -1 && ink_level < 100) {
-        //TODO: do the drawing with draw_lines function?
-        context.beginPath();
-        context.moveTo(last_x, last_y);
-        context.lineTo(p.x, p.y);
-        context.strokeStyle = color;
-        context.stroke();
+        draw_lines(context, [last_x, last_y, p.x, p.y], color);
         line_buffer = line_buffer.concat(last_x, last_y, p.x, p.y);
-        context.closePath();
       }
       last_x = p.x;
       last_y = p.y;
