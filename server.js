@@ -90,32 +90,34 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/draw':
-      var id = qs.parse(url.parse(req.url).query.toString()).id;
-      var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data).lines;
-      
-      console.log('draw from id ' + id + ' with line data: ' + data);
-      
-      var color = users[id].color;
-      var room = users[id].room;
+      try {
+        var id = qs.parse(url.parse(req.url).query.toString()).id;
+        var data = JSON.parse(qs.parse(url.parse(req.url).query.toString()).data).lines;
+        
+        console.log('draw from id ' + id + ' with line data: ' + data);
+        
+        var color = users[id].color;
+        var room = users[id].room;
 
-      // json to send to other clients
-      var line_data = { type: "lines", lines: data, color: color }, i;
-      
-      // figure out who to send the new line data to
-      for (i in room_user_ids[room]) {
-        var other_id = room_user_ids[room][i];
-        if (other_id !== id) {
-          // we have a user which needs this data
-          user_update_buffer[other_id].push(line_data);
+        // json to send to other clients
+        var line_data = { type: "lines", lines: data, color: color }, i;
+        
+        // figure out who to send the new line data to
+        for (i in room_user_ids[room]) {
+          var other_id = room_user_ids[room][i];
+          if (other_id !== id) {
+            // we have a user which needs this data
+            user_update_buffer[other_id].push(line_data);
+          }
         }
-      }
-      // always save the data as well
-      room_data[room].push(line_data);
-      
-      //TODO: ink level
-      
-      res.writeHead(200, lib.plain);
-      res.end("success");
+        // always save the data as well
+        room_data[room].push(line_data);
+        
+        //TODO: ink level
+        
+        res.writeHead(200, lib.plain);
+        res.end("success");
+      } catch(err) {}
     break;
     
     case '/update':
