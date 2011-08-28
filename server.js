@@ -107,11 +107,16 @@ var app = http.createServer(function (req, res) {
 
     case '/':
       try {
-        var room_name = url.parse(req.url).query.toString().replace('room=', '');
-        if ( typeof room_user_ids[room_name] === 'undefined' ) {
-          room_user_ids[room_name] = [];
-          room_data[room_name] = [];
-          room_ink[room_name] = [];
+        try {
+          var room_name = url.parse(req.url).query.toString().replace('room=', '');
+        } catch(err) { } // no room_name argument provided
+        // if we have the room name, set up the room if necessary
+        if (room_name !== undefined) {
+          if ( typeof room_user_ids[room_name] === 'undefined' ) {
+            room_user_ids[room_name] = [];
+            room_data[room_name] = [];
+            room_ink[room_name] = [];
+          }
         }
       } catch(err) { console.log('err on /'); console.log(err); }
       fs.readFile('index.html', function(err, data) {
