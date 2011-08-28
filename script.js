@@ -67,23 +67,6 @@ function update(room, context, canvas, id) {
       }, 3333);
     }
   });
-  $.getJSON('/update', {id: id}, function(data) {
-    // data is a list of update objects
-    var i;
-    for (i in data) {
-      if (data[i].type === "lines") {
-        draw_lines(context, data[i].lines, data[i].color);
-      } else if (data[i].type === "users") {
-        update_users(room, data[i].users);
-      } else if (data[i].type === 'ink') {
-        ink_level = update_ink(data[i].ink);
-      } else if (data[i].type === 'clear') {
-        context.clearRect(0,0,canvas.width(),canvas.height());
-      }
-    }
-    // recurse to poll for the next response
-    update(room, context, canvas, id);
-  });
 }
 
 function go(name, room, color, id) {
