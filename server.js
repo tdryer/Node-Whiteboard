@@ -14,13 +14,13 @@ var debug = process.argv[3] ? true : false,
     num_of_lines = [],
     
     // users[id] holds .name, .color, .room, .needs_full_update for a user
-    users = [],
+    users = {},
     // user_update_buffer[id] holds list of objects to be sent to use with that id via /update
-    user_update_buffer = [], 
+    user_update_buffer = {}, 
     // room_user_ids[room name] holds a list of user ids for users in that room
     room_user_ids = {},
     // room_data[room name] holds all the line data for a room
-    room_data = [],
+    room_data = {},
     
     lib = require('./helpers'),
     http = require('http'),
@@ -28,6 +28,19 @@ var debug = process.argv[3] ? true : false,
     path = require('path'),
     qs = require('querystring'),
     fs = require('fs');
+
+function refresh_usernames(room) {
+  // send a username update to everyone in the given room
+  usernames = [];
+  for (i in room_user_ids[room]) {
+    usernames.push({name: users[room_user_ids[room][i]].name, color: users[room_user_ids[room][i]].color});
+  }
+  // update user list on the client
+  for (i in room_user_ids[room]) {
+    var other_id = room_user_ids[room][i];
+    user_update_buffer[other_id].push({type: 'users', users: usernames});
+  }
+}
 
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
@@ -71,9 +84,11 @@ var app = http.createServer(function (req, res) {
         needs_full_update: true
       };
       //TODO: check that room exists
-      console.log(room_user_ids)
       room_user_ids[room].push(id);
       user_update_buffer[id] = [];
+      
+      refresh_usernames(room);
+      
       res.writeHead(200, lib.plain);
       res.end(users[id].color);
       console.log('added user ' + users[id].name + ' with id ' + id);
@@ -89,7 +104,7 @@ var app = http.createServer(function (req, res) {
       var room = users[id].room;
 
       // json to send to other clients
-      var line_data = { lines: data, color: color };
+      var line_data = { type: "lines", lines: data, color: color };
       
       // figure out who to send the new line data to
       for (i in room_user_ids[room]) {
@@ -137,22 +152,15 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/leave':
-      var get = url.parse(req.url).query.toString().split('&'),
-          name = get[0].replace('name=', ''),
-          room = get[1].replace('room=', ''),
-          index;
-      if ( rooms[room].length === 1 ) {
-        rooms[room] = [];
-      } else {
-        console.log(rooms[room].length);
-        for ( var i in rooms[room] ) {
-          if (rooms[room][i].name == name) {
-            index = i;
-          }
-        }
-        rooms[room].splice(index, 1);
-      }
-      users[name] = null;
+      var id = qs.parse(url.parse(req.url).query.toString()).id;
+      // remove the user from relevant data structures
+      var room = users[id].room;
+      room_user_ids[room].splice(room_user_ids[room].indexOf(id), 1);
+      delete users[id];
+      delete user_update_buffer[id];
+      // send updated username list to users in the same room
+      refresh_usernames(room);
+      
     break;
 
     default:

@@ -88,7 +88,11 @@ function go(name, room, color, id) {
   $.getJSON('/update', {id: id}, function(data) {
     // data is a list of update objects
     for (i in data) {
-      draw_lines(context, data[i].lines, data[i].color);
+      if (data[i].type === "lines") {
+        draw_lines(context, data[i].lines, data[i].color);
+      } else if (data[i].type === "users") {
+        update_users(room, data[i].users);
+      }
     }
     //update_users(room, data.users);
     //update_whiteboard(context, data.lines);
@@ -150,8 +154,7 @@ function go(name, room, color, id) {
   });
   window.onbeforeunload = function() {
     $.get('/leave', {
-      name: name,
-      room: room
+      id: id
     });
   };
 }
