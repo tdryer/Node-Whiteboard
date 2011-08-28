@@ -66,13 +66,12 @@ var app = http.createServer(function (req, res) {
       var room = data.room;
       var lines = data.lines;
       var name = data.name;
-      if (num_of_lines[room] + (lines.length / 4) < lib.MAX_INK) {
+      var remaining_ink = lib.MAX_INK - num_of_lines[room];
+      lines = lines.slice(0, remaining_ink * 4); // don't add more lines that the ink limit allows
+      if (lines !== []) {
         drawings[room].push({lines: lines, color: users[name].color});
         num_of_lines[room] += lines.length / 4;
         console.log("got " + lines.length / 4 + " lines for " + room + ' from ' + name);
-      } else {
-        // no ink left
-        console.log("not enough ink for lines for " + room + ' from ' + name);
       }
       res.writeHead(200, lib.plain);
       res.end("success");

@@ -8,7 +8,7 @@ function clearCanvas(context, canvas) {
   canvas.width = w;
 }
 function update_ink(ink_percent) {
-  $('#ink').html('Ink used: ' + ink_percent + '%');
+  $('#ink').html('Ink used: ' + Math.round(ink_percent*100) + '%');
 }
 function update_users(room, data) {
   var i;
