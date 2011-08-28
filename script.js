@@ -143,6 +143,10 @@ function go(name, room, color, id) {
     ev.preventDefault();
     window.open(canvas.get(0).toDataURL());
   });
+  $('#vote').click(function(ev){
+    ev.preventDefault();
+    window.open($(this).val());
+  });
   window.onbeforeunload = function() {
     $.get('/leave', {
       id: id
