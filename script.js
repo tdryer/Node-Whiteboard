@@ -132,11 +132,18 @@ function go(name, room, color) {
 }
 
 $(function() {
+  $('html').noisy({
+    'intensity' : 1,
+    'size' : 200,
+    'opacity' : 0.1,
+    'fallback' : '',
+    'monochrome' : false
+  });
   var room, color, prompt;
   var room_parameter = url_parameter('room');
   if ( room_parameter ) {
     room = room_parameter;
-    prompt = 'Welcome to <span class="title">Node Whiteboard</span>, a realtime collaborative drawing tool.<br><br>We\'ve got a room ready for you,<br>to get started, just enter a nickname:';
+    prompt = 'Welcome to <img src="/icon.png" /><span class="title">Node Whiteboard</span>, a realtime collaborative drawing tool.<br><br>We\'ve got a room ready for you,<br>to get started, just enter a nickname:';
     $('input[name="share-url"]').val(window.location.href);
     show_prompt(prompt);
   } else {
