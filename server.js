@@ -9,10 +9,6 @@ try {
 var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     
-    rooms = [],
-    drawings = [],
-    num_of_lines = [],
-    
     // users[id] holds .name, .color, .room, .needs_full_update for a user
     users = {},
     // user_update_buffer[id] holds list of objects to be sent to use with that id via /update
@@ -31,6 +27,7 @@ var debug = process.argv[3] ? true : false,
 
 function refresh_usernames(room) {
   // send a username update to everyone in the given room
+  // collect list of usernames in room
   usernames = [];
   for (i in room_user_ids[room]) {
     usernames.push({name: users[room_user_ids[room][i]].name, color: users[room_user_ids[room][i]].color});
@@ -138,12 +135,13 @@ var app = http.createServer(function (req, res) {
         res.end(JSON.stringify(user_update_buffer[id]));
         user_update_buffer[id] = []; // empty the buffer
       } else {
-        //TODO: replace this with long polling
+        //TODO: long poll until there is something in the buffer?
         res.writeHead(200, lib.plain);
         res.end(JSON.stringify([])); // send empty list
       }
     break;
 
+    //TODO: update this for post-refactor
     case '/clear':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
       drawings[room_name] = [];

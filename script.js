@@ -2,9 +2,6 @@ function get_random_id() {
   // TODO: maybe something more robust
   return Math.round(Math.random() * 100000).toString();
 }
-function urldecode(str) {
-  return unescape(str.replace(/\+/g, ' '));
-}
 function clearCanvas(context, canvas) {
   context.clearRect(0, 0, canvas.width, canvas.height);
   var w = canvas.width;
@@ -21,22 +18,6 @@ function update_users(room, data) {
   $('#users').html('<b>' + room + '</b>:<br>');
   for ( i in data ) {
     $('#users').append('<br><span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
-  }
-}
-function update_whiteboard(context, data) {
-  while ( data.length > 0 ) {
-    var obj = data.pop();
-    var color = obj.color;
-    var lines = obj.lines;
-    var i, j, x, y;
-    for ( j = 0; j < lines.length; j += 4) {
-      context.beginPath();
-      context.lineTo(lines[j], lines[j+1]);
-      context.lineTo(lines[j+2], lines[j+3]);
-      context.strokeStyle = color;
-      context.stroke();
-      context.closePath();
-    }
   }
 }
 function draw_lines(context, lines, color) {
@@ -94,9 +75,6 @@ function go(name, room, color, id) {
         update_users(room, data[i].users);
       }
     }
-    //update_users(room, data.users);
-    //update_whiteboard(context, data.lines);
-    //ink_level = update_ink(data.ink);
   });
 }
   setInterval(function() {
@@ -110,6 +88,7 @@ function go(name, room, color, id) {
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
+    //TODO: update this for post-refactor
     // tell server to clear this whiteboard
     $.get('/clear', {room: room}, function(data) {
       // once the request completes, clear the local canvas
@@ -120,6 +99,7 @@ function go(name, room, color, id) {
     var p = canvas_mouse_pos(ev, canvas);
     if ( mouse_down) {
       if (last_x !== -1 && last_y !== -1 && ink_level < 100) {
+        //TODO: do the drawing with draw_lines function?
         context.beginPath();
         context.moveTo(last_x, last_y);
         context.lineTo(p.x, p.y);
