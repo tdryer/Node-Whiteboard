@@ -132,6 +132,10 @@ function go(name, room, color, id) {
     ev.preventDefault();
     $('input[name="share-url"]').select();
   });
+  $('#export').click(function(ev){
+    ev.preventDefault();
+    window.open(canvas.get(0).toDataURL());
+  });
   window.onbeforeunload = function() {
     $.get('/leave', {
       id: id
