@@ -1,5 +1,10 @@
+body {
+  text-align: center;
+  font-family: 'Droid Serif', serif;
+  font-size: 15px;
+}
 h1 {
-  font-weight: bold;
+  font-family: 'Delius', cursive;
   font-size: 111px;
   line-height: 123px;
   color: white;
@@ -18,10 +23,5 @@ h1 {
 }
 #canvas {
   cursor: crosshair;
-  border: 10px solid silver;
-  width: 800px;
-  height: 600px;
-}
-body {
-  text-align: center;
+  border: 10px solid black;
 }

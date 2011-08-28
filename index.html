@@ -5,6 +5,8 @@
     <title>Whiteboard - by Team Heisenbug</title>
     <meta name="description" content="Node Whiteboard for Node Knockout 2011">
     <meta name="author" content="Team Heisenbug - David, Michael, Tom">
+    <link href='http://fonts.googleapis.com/css?family=Delius' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="smoke.css">
     <link rel="stylesheet" href="dark.css">
     <link rel="stylesheet" href="bootstrap-1.1.1.min.css">
@@ -13,18 +15,20 @@
   <body>
     <div class="container">
       <h1>Node Whiteboard</h1>
+      Node Whiteboard is an online collaborative drawing application.
       <div class="row">
-        <input type="text" value="" name="share-url" id="share-url" class="" readonly />
-      </div>
-      <div class="row">
-        <div class="span14">
-          <canvas id="canvas">Your browser does not support canvas!</canvas>
+        <div class="span14" id="canvas-holder">
+          <canvas id="canvas" width="800" height="600">Your browser does not support canvas!</canvas>
         </div>
         <div class="span2">
           <p id="users"></p>
           <p id="ink">Ink used: 0%</p>
           <a href="#" id="clear-all">Clear all</a>
         </div>
+      </div>
+      <div class="row">
+        <span>Share this URL with all your friends!</span>
+        <input type="text" value="" name="share-url" id="share-url" class="" readonly />
       </div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
