@@ -115,6 +115,8 @@ var app = http.createServer(function (req, res) {
               res.writeHead(200, lib.css);
             } else if (extension === '.js') {
               res.writeHead(200, lib.js);
+            } else if (extension === '.png') {
+              res.writeHead(200, lib.png);
             }
             res.end(data);
           });
