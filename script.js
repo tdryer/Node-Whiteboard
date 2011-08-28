@@ -54,6 +54,8 @@ function canvas_mouse_pos(event, canvas) {
 function go(name, room, color) {
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
+  canvas.onselectstart = function () { return false; } // ie
+  canvas.onmousedown = function () { return false; } // mozilla
   var mouse_down = false;
   var last_x = -1, last_y = -1; // start of the current line segment
   var line_buffer = []; // lines waiting to be sent to server
@@ -118,12 +120,12 @@ function go(name, room, color) {
     ev.preventDefault();
     $('input[name="share-url"]').select();
   });
-  $(window).unload(function() {
+  window.onbeforeunload = function() {
     $.get('/leave', {
       name: name,
       room: room
     });
-  });
+  };
 }
 
 $(function() {
