@@ -65,6 +65,7 @@ function refresh_ink_room(room) {
 function clear_room(room) {
   // delete lines for a room and send clear messages to clients
   room_data[room] = [];
+  var i;
   for (i in room_user_ids[room]) {
     var id = room_user_ids[room][i];
     user_update_buffer[id].push({type: 'clear'});
@@ -111,7 +112,7 @@ var app = http.createServer(function (req, res) {
           room_user_ids[room_name] = [];
           room_data[room_name] = [];
         }
-      } catch(err) {}
+      } catch(err) { console.log('err on /'); console.log(err); }
       fs.readFile('index.html', function(err, data) {
         gzip(data, function(err, data){
           res.writeHead(200, lib.html);
@@ -121,42 +122,46 @@ var app = http.createServer(function (req, res) {
     break;
 
     case '/get-a-room':
-      var new_room = lib.genRoom();
-      if ( typeof room_user_ids[new_room] === 'undefined' ) {
-        room_user_ids[new_room] = [];
-        room_data[new_room] = [];
-        room_ink[new_room] = 0;
-      }
-      gzip(new_room, function(err, new_room){
-        res.writeHead(200, lib.plain_gzip);
-        res.end(new_room);
-      });
-      console.log('created room: ' + new_room);
+      try {
+        var new_room = lib.genRoom();
+        if ( typeof room_user_ids[new_room] === 'undefined' ) {
+          room_user_ids[new_room] = [];
+          room_data[new_room] = [];
+          room_ink[new_room] = 0;
+        }
+        gzip(new_room, function(err, new_room){
+          res.writeHead(200, lib.plain_gzip);
+          res.end(new_room);
+        });
+        console.log('created room: ' + new_room);
+      } catch(err) { console.log('err on /get-a-room'); console.log(err); }
     break;
 
     case '/join':
-      var get = url.parse(req.url).query.toString().split('&'),
-          name = get[0].replace('name=', ''),
-          room = get[1].replace('room=', ''),
-          id = get[2].replace('id=', '');
-      users[id] = {
-        name: name,
-        color: lib.genColor(),
-        room: room
-      };
-      //TODO: check that room exists
-      room_user_ids[room].push(id);
-      user_update_buffer[id] = [];
-      
-      full_update(id); // send new user all existing line data
-      refresh_usernames(room);
-      refresh_ink(id, room);
-      
-      check_polling_updates() // polling users may need updates now
-      
-      res.writeHead(200, lib.plain);
-      res.end(users[id].color);
-      console.log('added user ' + users[id].name + ' with id ' + id);
+      try {
+        var get = url.parse(req.url).query.toString().split('&'),
+            name = get[0].replace('name=', ''),
+            room = get[1].replace('room=', ''),
+            id = get[2].replace('id=', '');
+        users[id] = {
+          name: name,
+          color: lib.genColor(),
+          room: room
+        };
+        //TODO: check that room exists
+        room_user_ids[room].push(id);
+        user_update_buffer[id] = [];
+        
+        full_update(id); // send new user all existing line data
+        refresh_usernames(room);
+        refresh_ink(id, room);
+        
+        check_polling_updates(); // polling users may need updates now
+        
+        res.writeHead(200, lib.plain);
+        res.end(users[id].color);
+        console.log('added user ' + users[id].name + ' with id ' + id);
+      } catch(err) { console.log('err on /join'); console.log(err); )
     break;
 
     case '/draw':
@@ -197,7 +202,7 @@ var app = http.createServer(function (req, res) {
         
         res.writeHead(200, lib.plain);
         res.end("success");
-      } catch(err) {}
+      } catch(err) { console.log('err on /draw'); console.log(err); }
     break;
     
     case '/update':
@@ -214,7 +219,7 @@ var app = http.createServer(function (req, res) {
           // long poll the request
           update_requests[id] = res;
         }
-      } catch (err) {}
+      } catch (err) { console.log('err on /update'); console.log(err); }
     break;
 
     case '/clear':
@@ -229,7 +234,7 @@ var app = http.createServer(function (req, res) {
         
         res.writeHead(200, lib.plain);
         res.end('1');
-      } catch (err) {}
+      } catch (err) { console.log('err on /clear'); console.log(err); }
     break;
 
     case '/leave':
@@ -243,9 +248,7 @@ var app = http.createServer(function (req, res) {
         // send updated username list to users in the same room
         refresh_usernames(room);
         check_polling_updates(); // polling users may need updates now
-      } catch(err) {
-        
-      }
+      } catch(err) { console.log('err on /leave'); console.log(err); }
     break;
 
     default:
@@ -283,7 +286,5 @@ app.listen(port, function() {
         process.setuid(stats.uid);
       });
     }
-  } catch (err) {
-    // poor windows
-  }
+  } catch (err) { console.log(err); }
 });
