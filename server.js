@@ -77,6 +77,8 @@ function full_update(id) {
 }
 
 function respond_to_update(id, res) {
+  // make sure res is defined TODO: better fix
+  if (res === undefined) { return; }
   // respond to the user id's /update request with the given response object
   gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
     res.writeHead(200, lib.plain_gzip);
