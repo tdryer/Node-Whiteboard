@@ -134,17 +134,15 @@ function go(name, room, color) {
 $(function() {
   var room, color, prompt;
   var room_parameter = url_parameter('room');
-  if (room_parameter !== 0) {
+  if ( room_parameter ) {
     room = room_parameter;
     prompt = 'You joined a room: ' + room + '. Enter a nickname:';
     $('input[name="share-url"]').val(window.location.href);
     show_prompt(prompt);
-  }
-  else {
+  } else {
     $.get('/get-a-room', function(data) {
       room = data;
-      $('input[name="share-url"]').val(window.location.href + '?room=' + room);
-      show_prompt('You joined a new room: ' + room + '. Enter a nickname:');
+      window.location.href = window.location.href + '?room=' + room;
     });
   }
   
