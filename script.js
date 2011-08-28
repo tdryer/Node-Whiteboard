@@ -14,7 +14,7 @@ function update_ink(ink_percent) {
 }
 function update_users(room, data) {
   var i;
-  $('#users').html('<b>' + room + '</b>: ');
+  $('#users').html('<b>' + room + '</b>:<br>');
   for ( i in data ) {
     $('#users').append('<br><span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }

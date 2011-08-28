@@ -15,6 +15,9 @@ p, .blurb {
   text-align: left;
   font-size: 16px;
 }
+b {
+  font-size: 20px;
+}
 html {
   background: #ccc;
 }
