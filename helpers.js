@@ -44,3 +44,5 @@ module.exports.post_handler = function(request, callback) {
     });
   };
 };
+
+module.exports.MAX_INK = 1024;
