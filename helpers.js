@@ -1,5 +1,3 @@
-var qs = require('querystring');
-
 module.exports = {
   plain: {
     'Content-Type': 'text/plain'
@@ -38,22 +36,6 @@ module.exports.genRoom = function(length) {
     text += pool.charAt( Math.floor (Math.random() * pool.length ) );
   }
   return text;
-};
-
-module.exports.post_handler = function(request, callback) {
-  var _REQUEST = {};
-  var _CONTENT = '';
-
-  if (request.method === 'POST') {
-    request.addListener('data', function(chunk) {
-      _CONTENT+= chunk;
-    });
-
-    request.addListener('end', function() {
-      _REQUEST = qs.parse(_CONTENT);
-      callback(_REQUEST);
-    });
-  }
 };
 
 module.exports.MAX_INK = 2048;
