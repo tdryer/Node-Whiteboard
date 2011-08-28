@@ -1,7 +1,7 @@
 h1 {
   font-weight: bold;
   font-size: 111px;
-  line-height: 111px;
+  line-height: 123px;
   color: white;
   text-shadow: 0 1px  0 #ccc,
                0 2px  0 #c9c9c9,
@@ -16,9 +16,11 @@ h1 {
                0 10px 10px rgba(0, 0, 0, 0.2),
                0 20px 20px rgba(0, 0, 0, 0.15);
 }
-canvas {
+#canvas {
   cursor: crosshair;
-  border: 1px solid black;
+  border: 10px solid silver;
+  width: 800px;
+  height: 600px;
 }
 body {
   text-align: center;
