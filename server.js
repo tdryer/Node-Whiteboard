@@ -161,7 +161,7 @@ var app = http.createServer(function (req, res) {
         res.writeHead(200, lib.plain);
         res.end(users[id].color);
         console.log('added user ' + users[id].name + ' with id ' + id);
-      } catch(err) { console.log('err on /join'); console.log(err); )
+      } catch(err) { console.log('err on /join'); console.log(err); }
     break;
 
     case '/draw':
