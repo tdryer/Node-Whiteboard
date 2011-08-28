@@ -11,6 +11,7 @@ var debug = process.argv[3] ? true : false,
     users = [],
     rooms = [],
     drawings = [],
+    num_of_lines = [],
     lib = require('./helpers'),
     http = require('http'),
     url = require('url'),
@@ -34,6 +35,7 @@ var app = http.createServer(function (req, res) {
       if ( typeof rooms[new_room] === 'undefined' ) {
         rooms[new_room] = [];
         drawings[new_room] = [];
+        num_of_lines[new_room] = 0;
       }
       res.writeHead(200, lib.plain);
       res.end(new_room);
@@ -64,15 +66,23 @@ var app = http.createServer(function (req, res) {
       var room = data.room;
       var lines = data.lines;
       var name = data.name;
-      drawings[room].push({lines: lines, color: users[name].color});
-      console.log("got " + lines.length / 4 + " lines for " + room + ' from ' + name);
+      if (num_of_lines[room] + (lines.length / 4) < lib.MAX_INK) {
+        drawings[room].push({lines: lines, color: users[name].color});
+        num_of_lines[room] += lines.length / 4;
+        console.log("got " + lines.length / 4 + " lines for " + room + ' from ' + name);
+      } else {
+        // no ink left
+        console.log("not enough ink for lines for " + room + ' from ' + name);
+      }
       res.writeHead(200, lib.plain);
       res.end("success");
     break;
 
     case '/update':
       var room_name = url.parse(req.url).query.toString().replace('room=', '');
-      var data = { lines: drawings[room_name], users: rooms[room_name] };
+      var data = { lines: drawings[room_name], 
+                   users: rooms[room_name], 
+                   ink: num_of_lines[room_name] / lib.MAX_INK };
       res.writeHead(200, lib.plain);
       res.end(JSON.stringify(data));
     break;

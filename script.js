@@ -7,6 +7,9 @@ function clearCanvas(context, canvas) {
   canvas.width = 1;
   canvas.width = w;
 }
+function update_ink(ink_percent) {
+  $('#ink').html('Ink used: ' + ink_percent + '%');
+}
 function update_users(room, data) {
   var i;
   $('#users').html(room + ': ');
@@ -34,6 +37,7 @@ function update(room, context, canvas) {
   $.getJSON('/update', {room: room}, function(data) {
     update_users(room, data.users);
     update_whiteboard(context, data.lines);
+    update_ink(data.ink);
   });
 }
 function url_parameter(name) {
