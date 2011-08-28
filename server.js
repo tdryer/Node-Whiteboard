@@ -87,6 +87,25 @@ var app = http.createServer(function (req, res) {
       res.end(JSON.stringify(data));
     break;
 
+    case '/leave':
+      var get = url.parse(req.url).query.toString().split('&'),
+          name = get[0].replace('name=', ''),
+          room = get[1].replace('room=', ''),
+          index;
+      if ( rooms[room].length === 1 ) {
+        rooms[room] = [];
+      } else {
+        console.log(rooms[room].length);
+        for ( var i in rooms[room] ) {
+          if (rooms[room][i].name == name) {
+            index = i;
+          }
+        }
+        rooms[room].splice(index, 1);
+      }
+      users[name] = null;
+    break;
+
     default:
       var file = path.join(process.cwd(), uri), extension;
       path.exists(file, function(exists) {

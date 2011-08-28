@@ -118,6 +118,12 @@ function go(name, room, color) {
     ev.preventDefault();
     $('input[name="share-url"]').select();
   });
+  $(window).unload(function() {
+    $.get('/leave', {
+      name: name,
+      room: room
+    });
+  });
 }
 
 $(function() {
