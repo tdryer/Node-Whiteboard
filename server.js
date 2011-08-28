@@ -7,7 +7,7 @@ try {
 var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     
-    // users[id] holds .name, .color, .room, .needs_full_update for a user
+    // users[id] holds .name, .color, .room, for a user
     users = {},
     // user_update_buffer[id] holds list of objects to be sent to use with that id via /update
     user_update_buffer = {}, 
@@ -69,6 +69,11 @@ function clear_room(room) {
   }
 }
 
+function full_update(id) {
+  // send user a full update of all the line data for the room they are in
+  user_update_buffer[id] = user_update_buffer[id].concat(room_data[users[id].room]);
+}
+
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
@@ -112,12 +117,12 @@ var app = http.createServer(function (req, res) {
         name: name,
         color: lib.genColor(),
         room: room,
-        needs_full_update: true,
       };
       //TODO: check that room exists
       room_user_ids[room].push(id);
       user_update_buffer[id] = [];
       
+      full_update(id); // send new user all existing line data
       refresh_usernames(room);
       refresh_ink(id, room);
       
@@ -171,11 +176,6 @@ var app = http.createServer(function (req, res) {
         console.log('update request from user id ' + id);
         // TODO: check validity of id
         try {
-          if (users[id].needs_full_update === true) {
-            // the user needs all the room data
-            users[id].needs_full_update = false;
-            user_update_buffer[id] = user_update_buffer[id].concat(room_data[users[id].room]);
-          }
           if (user_update_buffer[id].length !== 0) {
             // there are pending updates to send
             gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
