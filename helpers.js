@@ -4,17 +4,25 @@ module.exports = {
   plain: {
     'Content-Type': 'text/plain'
   },
+  plaingzip: {
+    'Content-Type': 'text/plain',
+    'Content-Encoding': 'gzip'
+  },
   html: {
-    'Content-Type': 'text/html'
+    'Content-Type': 'text/html',
+    'Content-Encoding': 'gzip'
   },
   css: {
-    'Content-Type': 'text/css'
+    'Content-Type': 'text/css',
+    'Content-Encoding': 'gzip'
   },
   js: {
-    'Content-Type': 'text/javascript'
+    'Content-Type': 'text/javascript',
+    'Content-Encoding': 'gzip'
   },
   png: {
-    'Content-Type': 'image/png'
+    'Content-Type': 'image/png',
+    'Content-Encoding': 'gzip'
   }
 };
 

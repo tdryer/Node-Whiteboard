@@ -19,6 +19,7 @@ var debug = process.argv[3] ? true : false,
     room_ink = {},
     
     lib = require('./helpers'),
+    gzip = require('./gzip'),
     http = require('http'),
     url = require('url'),
     path = require('path'),
@@ -81,8 +82,10 @@ var app = http.createServer(function (req, res) {
         }
       } catch(err) {}
       fs.readFile('index.html', function(err, data) {
-        res.writeHead(200, lib.html);
-        res.end(data);
+        gzip(data, function(err, data){
+          res.writeHead(200, lib.html);
+          res.end(data);
+        });
       });
     break;
 
@@ -93,8 +96,10 @@ var app = http.createServer(function (req, res) {
         room_data[new_room] = [];
         room_ink[new_room] = 0;
       }
-      res.writeHead(200, lib.plain);
-      res.end(new_room);
+      gzip(new_room, function(err, new_room){
+        res.writeHead(200, lib.plaingzip);
+        res.end(new_room);
+      });
       console.log('created room: ' + new_room);
     break;
 
@@ -173,13 +178,17 @@ var app = http.createServer(function (req, res) {
           }
           if (user_update_buffer[id].length !== 0) {
             // there are pending updates to send
-            res.writeHead(200, lib.plain);
-            res.end(JSON.stringify(user_update_buffer[id]));
+            gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
+              res.writeHead(200, lib.plaingzip);
+              res.end(data);
+            });
             user_update_buffer[id] = []; // empty the buffer
           } else {
             //TODO: long poll until there is something in the buffer?
-            res.writeHead(200, lib.plain);
-            res.end(JSON.stringify([])); // send empty list
+            gzip(JSON.stringify([]), function(err, data){
+              res.writeHead(200, lib.plaingzip);
+              res.end(data);
+            });
           }
         } catch(err) {}
       } catch(err) {}
@@ -218,14 +227,16 @@ var app = http.createServer(function (req, res) {
         if (exists) {
           extension = file.lastIndexOf('.') < 0 ? '' : file.substring(file.lastIndexOf('.'));
           fs.readFile(file, function(err, data) {
-            if ( extension === '.css' ) {
-              res.writeHead(200, lib.css);
-            } else if (extension === '.js') {
-              res.writeHead(200, lib.js);
-            } else if (extension === '.png') {
-              res.writeHead(200, lib.png);
-            }
-            res.end(data);
+            gzip(data, function(err, data){
+              if ( extension === '.css' ) {
+                res.writeHead(200, lib.css);
+              } else if (extension === '.js') {
+                res.writeHead(200, lib.js);
+              } else if (extension === '.png') {
+                res.writeHead(200, lib.png);
+              }
+              res.end(data);
+            });
           });
         }
       });
