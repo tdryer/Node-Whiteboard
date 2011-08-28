@@ -102,7 +102,7 @@ function go(name, room, color, id) {
         }
         last_x = p.x;
         last_y = p.y;
-      }else { console.log('saved a line'); }
+      }
     }
   };
   var on_mouseup = function(ev) {
