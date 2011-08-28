@@ -82,6 +82,11 @@ function go(name, room, color) {
   setInterval(function() {
     send_line_segments();
     update(room, context, canvas);
+    if (ink_level >= 100) {
+      $('canvas').css('cursor', 'not-allowed');
+    } else {
+      $('canvas').css('cursor', 'crosshair');
+    }
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
