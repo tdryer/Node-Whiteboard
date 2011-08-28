@@ -1,3 +1,7 @@
+function get_random_id() {
+  // TODO: maybe something more robust
+  return Math.round(Math.random() * 100000).toString();
+}
 function urldecode(str) {
   return unescape(str.replace(/\+/g, ' '));
 }
@@ -35,6 +39,17 @@ function update_whiteboard(context, data) {
     }
   }
 }
+function draw_lines(context, lines, color) {
+  // add lines to the context, for lines = [x1, y1, x2, y2, ...]
+  for ( j = 0; j < lines.length; j += 4) {
+      context.beginPath();
+      context.lineTo(lines[j], lines[j+1]);
+      context.lineTo(lines[j+2], lines[j+3]);
+      context.strokeStyle = color;
+      context.stroke();
+      context.closePath();
+    }
+}
 function url_parameter(name) {
   var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (!results) { return 0; }
@@ -46,7 +61,8 @@ function canvas_mouse_pos(event, canvas) {
            y: event.pageY - canvas.offset().top };
 }
 
-function go(name, room, color) {
+function go(name, room, color, id) {
+  var id = id; // this client's unique id
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
   canvas.onselectstart = function () { return false; } // ie
@@ -61,22 +77,22 @@ function go(name, room, color) {
     if (line_buffer.length === 0) {
       return;
     }
-    var data = {};
-    data.room = room;
-    data.lines = line_buffer;
-    data.name = name;
     var sent_length = line_buffer.length; // number of entries we try to send
-    $.get('/draw', {data: JSON.stringify(data)}, function() {
+    $.get('/draw', {id: id, data: JSON.stringify({lines: line_buffer})}, function() {
       // success, clear the line buffer of lines which were sent
       // this prevents lines drawn during the request from being lost
       line_buffer = line_buffer.slice(sent_length, line_buffer.length);
     });
   }
   function update(room, context, canvas) {
-  $.getJSON('/update', {room: room}, function(data) {
-    update_users(room, data.users);
-    update_whiteboard(context, data.lines);
-    ink_level = update_ink(data.ink);
+  $.getJSON('/update', {id: id}, function(data) {
+    // data is a list of update objects
+    for (i in data) {
+      draw_lines(context, data[i].lines, data[i].color);
+    }
+    //update_users(room, data.users);
+    //update_whiteboard(context, data.lines);
+    //ink_level = update_ink(data.ink);
   });
 }
   setInterval(function() {
@@ -158,15 +174,17 @@ $(function() {
   }
   
   function show_prompt(prompt) {
+    var new_id = get_random_id();
     smoke.prompt(prompt, function(name) {
       if (name) {
         $.get('/join', {
           name: name,
-          room: room
+          room: room,
+          id: new_id
           }, function(data) {
             color = data;
             $('.container').show();
-            go(name, room, color);
+            go(name, room, color, new_id);
           });
       } else {
         location.reload();
