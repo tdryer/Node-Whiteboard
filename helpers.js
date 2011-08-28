@@ -13,7 +13,7 @@ module.exports = {
   js: {
     'Content-Type': 'text/javascript'
   },
-  png {
+  png: {
     'Content-Type': 'image/png'
   }
 };
