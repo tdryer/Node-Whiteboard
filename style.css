@@ -1,10 +1,14 @@
-body {
+body, .smoke {
   text-align: center;
   font-family: 'Droid Serif', serif;
-  font-size: 15px;
+}
+.container {
+  display: none;
+}
+.title {
+  font-family: 'Delius', cursive;
 }
 h1 {
-  font-family: 'Delius', cursive;
   font-size: 111px;
   line-height: 123px;
   color: white;

@@ -136,7 +136,7 @@ $(function() {
   var room_parameter = url_parameter('room');
   if ( room_parameter ) {
     room = room_parameter;
-    prompt = 'You joined a room: ' + room + '. Enter a nickname:';
+    prompt = 'Welcome to <span class="title">Node Whiteboard</span>, a realtime collaborative drawing tool.<br><br>We\'ve got a room ready for you,<br>to get started, just enter a nickname:';
     $('input[name="share-url"]').val(window.location.href);
     show_prompt(prompt);
   } else {
@@ -154,6 +154,7 @@ $(function() {
           room: room
           }, function(data) {
             color = data;
+            $('.container').show();
             go(name, room, color);
           });
       } else {
