@@ -17,6 +17,8 @@ var debug = process.argv[3] ? true : false,
     room_data = {},
     // room_ink[room name] holds the number of lines used by a room (can be recalculated)
     room_ink = {},
+    // update_requests[id] holds the last update response object from that user, or undefined
+    update_requests = {};
     
     lib = require('./helpers'),
     gzip = require('./gzip'),
@@ -74,6 +76,27 @@ function full_update(id) {
   user_update_buffer[id] = user_update_buffer[id].concat(room_data[users[id].room]);
 }
 
+function respond_to_update(id, res) {
+  // respond to the user id's /update request with the given response object
+  gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
+    res.writeHead(200, lib.plain_gzip);
+    res.end(data);
+  });
+  user_update_buffer[id] = []; // empty the buffer
+}
+
+function check_polling_updates() {
+  // for all polling update requests, respond to them if updates are ready
+  for (id in update_requests) {
+    var res = update_requests[id];
+    if (user_update_buffer[id] !== undefined && user_update_buffer[id].length !== 0) {
+      // data is ready
+      respond_to_update(id, res);
+      update_requests[id] = undefined; // no longer polling
+    }
+  }
+}
+
 var app = http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   switch (uri) {
@@ -126,6 +149,8 @@ var app = http.createServer(function (req, res) {
       refresh_usernames(room);
       refresh_ink(id, room);
       
+      check_polling_updates() // polling users may need updates now
+      
       res.writeHead(200, lib.plain);
       res.end(users[id].color);
       console.log('added user ' + users[id].name + ' with id ' + id);
@@ -163,6 +188,8 @@ var app = http.createServer(function (req, res) {
           // send the new ink level out
           room_ink[room] += data.length / 4;
           refresh_ink_room(room);
+          
+          check_polling_updates() // polling users may need updates now
         }
         
         res.writeHead(200, lib.plain);
@@ -174,24 +201,17 @@ var app = http.createServer(function (req, res) {
       try {
         var id = url.parse(req.url).query.toString().replace('id=', '');
         console.log('update request from user id ' + id);
-        // TODO: check validity of id
-        try {
-          if (user_update_buffer[id].length !== 0) {
-            // there are pending updates to send
-            gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
-              res.writeHead(200, lib.plain_gzip);
-              res.end(data);
-            });
-            user_update_buffer[id] = []; // empty the buffer
-          } else {
-            //TODO: long poll until there is something in the buffer?
-            gzip(JSON.stringify([]), function(err, data){
-              res.writeHead(200, lib.plain_gzip);
-              res.end(data);
-            });
-          }
-        } catch(err) {}
-      } catch(err) {}
+        
+        if (user_update_buffer[id].length !== 0) {
+          // respond now
+          respond_to_update(id, res);
+          // no request pending
+          update_requests[id] = undefined;
+        } else {
+          // long poll the request
+          update_requests[id] = res
+        }
+      } catch (err) {}
     break;
 
     case '/clear':
@@ -201,6 +221,9 @@ var app = http.createServer(function (req, res) {
         // clear ink level
         room_ink[room_name] = 0;
         refresh_ink_room(room_name);
+        
+        check_polling_updates() // polling users may need updates now
+        
         res.writeHead(200, lib.plain);
         res.end('1');
       } catch (err) {}
@@ -216,6 +239,7 @@ var app = http.createServer(function (req, res) {
         delete user_update_buffer[id];
         // send updated username list to users in the same room
         refresh_usernames(room);
+        check_polling_updates() // polling users may need updates now
       } catch(err) {
         
       }

@@ -53,6 +53,8 @@ function update(room, context, canvas, id) {
         context.clearRect(0,0,canvas.width(),canvas.height());
       }
     }
+    // recurse to poll for the next response
+    update(room, context, canvas, id);
   });
 }
 
@@ -77,9 +79,10 @@ function go(name, room, color, id) {
       line_buffer = line_buffer.slice(sent_length, line_buffer.length);
     });
   }
+  update(room, context, canvas, id);
   setInterval(function() {
     send_line_segments();
-    update(room, context, canvas, id);
+    //update(room, context, canvas, id);
     if (ink_level >= 100) {
       $('canvas').css('cursor', 'not-allowed');
     } else {
