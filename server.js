@@ -18,7 +18,7 @@ var debug = process.argv[3] ? true : false,
     // room_ink[room name] holds the number of lines used by a room (can be recalculated)
     room_ink = {},
     // update_requests[id] holds the last update response object from that user, or undefined
-    update_requests = {};
+    update_requests = {},
     
     lib = require('./helpers'),
     gzip = require('./gzip'),
@@ -39,7 +39,7 @@ function get_room_usernames(room) {
 
 function refresh_usernames(room) {
   // send a username update to everyone in the given room
-  var usernames = get_room_usernames(room);
+  var usernames = get_room_usernames(room), i;
   // update user list on the client
   for (i in room_user_ids[room]) {
     var other_id = room_user_ids[room][i];
@@ -47,19 +47,19 @@ function refresh_usernames(room) {
   }
 }
 
+function refresh_ink(id, room) {
+  // refresh ink for one user id
+  user_update_buffer[id].push({type: 'ink', ink: room_ink[room] / lib.MAX_INK});
+}
+
 function refresh_ink_room(room) {
-console.log('refreshing ink for room: '+room);
+  console.log('refreshing ink for room: ' + room);
   // send ink update to everyone in the given room
-  var usernames = get_room_usernames(room);
+  var usernames = get_room_usernames(room), i;
   for (i in room_user_ids[room]) {
     var other_id = room_user_ids[room][i];
     refresh_ink(other_id, room);
   }
-}
-
-function refresh_ink(id, room) {
-  // refresh ink for one user id
-  user_update_buffer[id].push({type: 'ink', ink: room_ink[room] / lib.MAX_INK});
 }
 
 function clear_room(room) {
@@ -89,6 +89,7 @@ function respond_to_update(id, res) {
 
 function check_polling_updates() {
   // for all polling update requests, respond to them if updates are ready
+  var id;
   for (id in update_requests) {
     var res = update_requests[id];
     if (user_update_buffer[id] !== undefined && user_update_buffer[id].length !== 0) {
@@ -141,7 +142,7 @@ var app = http.createServer(function (req, res) {
       users[id] = {
         name: name,
         color: lib.genColor(),
-        room: room,
+        room: room
       };
       //TODO: check that room exists
       room_user_ids[room].push(id);
@@ -191,7 +192,7 @@ var app = http.createServer(function (req, res) {
           room_ink[room] += data.length / 4;
           refresh_ink_room(room);
           
-          check_polling_updates() // polling users may need updates now
+          check_polling_updates(); // polling users may need updates now
         }
         
         res.writeHead(200, lib.plain);
@@ -211,7 +212,7 @@ var app = http.createServer(function (req, res) {
           update_requests[id] = undefined;
         } else {
           // long poll the request
-          update_requests[id] = res
+          update_requests[id] = res;
         }
       } catch (err) {}
     break;
@@ -224,7 +225,7 @@ var app = http.createServer(function (req, res) {
         room_ink[room_name] = 0;
         refresh_ink_room(room_name);
         
-        check_polling_updates() // polling users may need updates now
+        check_polling_updates(); // polling users may need updates now
         
         res.writeHead(200, lib.plain);
         res.end('1');
@@ -241,7 +242,7 @@ var app = http.createServer(function (req, res) {
         delete user_update_buffer[id];
         // send updated username list to users in the same room
         refresh_usernames(room);
-        check_polling_updates() // polling users may need updates now
+        check_polling_updates(); // polling users may need updates now
       } catch(err) {
         
       }
