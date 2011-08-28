@@ -4,7 +4,7 @@ module.exports = {
   plain: {
     'Content-Type': 'text/plain'
   },
-  plaingzip: {
+  plain_gzip: {
     'Content-Type': 'text/plain',
     'Content-Encoding': 'gzip'
   },
