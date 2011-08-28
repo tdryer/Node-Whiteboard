@@ -102,7 +102,7 @@ var app = http.createServer(function (req, res) {
         room_ink[new_room] = 0;
       }
       gzip(new_room, function(err, new_room){
-        res.writeHead(200, lib.plaingzip);
+        res.writeHead(200, lib.plain_gzip);
         res.end(new_room);
       });
       console.log('created room: ' + new_room);
@@ -179,14 +179,14 @@ var app = http.createServer(function (req, res) {
           if (user_update_buffer[id].length !== 0) {
             // there are pending updates to send
             gzip(JSON.stringify(user_update_buffer[id]), function(err, data){
-              res.writeHead(200, lib.plaingzip);
+              res.writeHead(200, lib.plain_gzip);
               res.end(data);
             });
             user_update_buffer[id] = []; // empty the buffer
           } else {
             //TODO: long poll until there is something in the buffer?
             gzip(JSON.stringify([]), function(err, data){
-              res.writeHead(200, lib.plaingzip);
+              res.writeHead(200, lib.plain_gzip);
               res.end(data);
             });
           }
