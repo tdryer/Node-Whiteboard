@@ -173,7 +173,7 @@ var app = http.createServer(function (req, res) {
         data = data.slice(0, remaining_ink * 4);
         
         // if there are lines still allowed after checking ink level
-        if (data !== []) {
+        if (data.length > 0) {
           // json to send to other clients
           var line_data = { type: "lines", lines: data, color: color }, i;
           
