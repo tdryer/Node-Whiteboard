@@ -16,26 +16,26 @@ function CList(duration) {
     this.list.push(item);
     this.bitmap[this.size] = true;
     this.repeat[this.size] = false;
-    // this.bitmap.push(true);
-    // this.repeat.push(false);
     setTimeout(this.decay, this.duration, [this, this.size]);
     this.size++;
   };
   this.get = function(index) {
-    if (this.bitmap[index] == true) {
+    if (this.bitmap[index]) {
       // refresh it's duration in the cache
-      this.repeat[index] = True
+      this.repeat[index] = true;
       // element is loaded locally
       return this.list[index];
     }
     else {
       // element must be loaded from db
       console.log('STUB: loading element[' + index + '] from db');
+      return this.list[index];
     }
   };
   this.decay = function(args) {
-    var obj = args[0];
-    var index = args[1];
+    console.log('CALLING DECAY');
+    var obj = args[0],
+        index = args[1];
     if (obj.bitmap[index]) {
       // element is in the cached
       if (!obj.repeat[index]) {
@@ -44,7 +44,7 @@ function CList(duration) {
       }
       else {
         obj.repeat[index] = false;
-        setTimeout(obj.decay, obj.duration, index);
+        setTimeout(obj.decay, obj.duration, [obj, index]);
       }
     }
     else {
@@ -54,7 +54,7 @@ function CList(duration) {
     }
   };
   this.del = function(index) {
-    // remove element at index from 
+    // remove element at index from list
   };
 }
 

@@ -9,8 +9,13 @@ var CList = require('./whiteboard').CList;
 //  console.log(x.board[l].pretty());
 //}
 
-var list = new CList(5000);
+var list = new CList(1000);
 console.log('Size: ' + list.size);
 list.add(1337);
-var x = list.get(0);
-//console.log('list[0] = ' + x);
+//list.add(4000);
+console.log('list[0] = ' + list.get(0));
+//console.log('list[1] = ' + list.get(1));
+setTimeout(function() {
+  console.log(list.get(0));
+
+}, 5000);
