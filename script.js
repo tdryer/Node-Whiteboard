@@ -8,7 +8,9 @@ function clearCanvas(context, canvas) {
   canvas.width = w;
 }
 function update_ink(ink_percent) {
-  $('#ink').html('Ink used: ' + Math.round(ink_percent*100) + '%');
+  var ink = Math.round(ink_percent*100);
+  $('#ink').html('Ink used: ' + ink + '%');
+  return ink;
 }
 function update_users(room, data) {
   var i;
@@ -33,13 +35,6 @@ function update_whiteboard(context, data) {
     }
   }
 }
-function update(room, context, canvas) {
-  $.getJSON('/update', {room: room}, function(data) {
-    update_users(room, data.users);
-    update_whiteboard(context, data.lines);
-    update_ink(data.ink);
-  });
-}
 function url_parameter(name) {
   var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (!results) { return 0; }
@@ -59,6 +54,7 @@ function go(name, room, color) {
   var mouse_down = false;
   var last_x = -1, last_y = -1; // start of the current line segment
   var line_buffer = []; // lines waiting to be sent to server
+  var ink_level = 0; // between 0-100
   function send_line_segments () {
     // send new line segments to the server and empty the buffer
     // do nothing if there are no lines to send
@@ -76,6 +72,13 @@ function go(name, room, color) {
       line_buffer = line_buffer.slice(sent_length, line_buffer.length);
     });
   }
+  function update(room, context, canvas) {
+  $.getJSON('/update', {room: room}, function(data) {
+    update_users(room, data.users);
+    update_whiteboard(context, data.lines);
+    ink_level = update_ink(data.ink);
+  });
+}
   setInterval(function() {
     send_line_segments();
     update(room, context, canvas);
@@ -87,7 +90,7 @@ function go(name, room, color) {
   var on_mousemove = function(ev) {
     var p = canvas_mouse_pos(ev, canvas);
     if ( mouse_down) {
-      if (last_x !== -1 && last_y !== -1) {
+      if (last_x !== -1 && last_y !== -1 && ink_level < 100) {
         context.beginPath();
         context.moveTo(last_x, last_y);
         context.lineTo(p.x, p.y);
