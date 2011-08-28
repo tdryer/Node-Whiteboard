@@ -6,18 +6,28 @@ String.prototype.format = function() {
   return formatted;
 };
 
-function CList(duration) {
-  this.duration = duration;
+function Lines() {
+  this.duration = 1000;
   this.size = 0;
   this.repeat = [];
   this.bitmap = [];
   this.list = [];
+  this.db = require('./db').init({user : 'hbug', pass : 'njimko123', name : 'hbug_nko', host : 'staff.mongohq.com', port : 10016});
+  this.db.collection('lines');
   this.add = function(item) {
     this.list.push(item);
     this.bitmap[this.size] = true;
     this.repeat[this.size] = false;
     setTimeout(this.decay, this.duration, [this, this.size]);
     this.size++;
+  };
+  this.test_db = function() {
+      this.db.lines.insert({a : 1}, function(err, docs) { console.log(docs); } );
+      this.db.lines.find(function(err, cursor) {
+        cursor.each(function(err, doc) {
+          console.log(doc);
+        });
+      });
   };
   this.get = function(index) {
     if (this.bitmap[index]) {
@@ -78,4 +88,4 @@ module.exports.Whiteboard = function(name) {
   };
 };
 
-module.exports.CList = CList;
+module.exports.Lines = Lines;
