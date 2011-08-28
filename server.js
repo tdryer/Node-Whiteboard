@@ -7,7 +7,7 @@ try {
 var debug = process.argv[3] ? true : false,
     port = process.argv[2] ? process.argv[2] : 80,
     
-    // users[id] holds .name, .color, .room, .needs_full_update, .clear for a user
+    // users[id] holds .name, .color, .room, .needs_full_update for a user
     users = {},
     // user_update_buffer[id] holds list of objects to be sent to use with that id via /update
     user_update_buffer = {}, 
@@ -15,6 +15,8 @@ var debug = process.argv[3] ? true : false,
     room_user_ids = {},
     // room_data[room name] holds all the line data for a room
     room_data = {},
+    // room_ink[room name] holds the number of lines used by a room (can be recalculated)
+    room_ink = {},
     
     lib = require('./helpers'),
     http = require('http'),
@@ -23,17 +25,46 @@ var debug = process.argv[3] ? true : false,
     qs = require('querystring'),
     fs = require('fs');
 
-function refresh_usernames(room) {
-  // send a username update to everyone in the given room
-  // collect list of usernames in room
+function get_room_usernames(room) {
+  // return a list of username for everyone in a room
   var usernames = [], i;
   for (i in room_user_ids[room]) {
     usernames.push({name: users[room_user_ids[room][i]].name, color: users[room_user_ids[room][i]].color});
   }
+  return usernames;
+}
+
+function refresh_usernames(room) {
+  // send a username update to everyone in the given room
+  var usernames = get_room_usernames(room);
   // update user list on the client
   for (i in room_user_ids[room]) {
     var other_id = room_user_ids[room][i];
     user_update_buffer[other_id].push({type: 'users', users: usernames});
+  }
+}
+
+function refresh_ink_room(room) {
+console.log('refreshing ink for room: '+room);
+  // send ink update to everyone in the given room
+  var usernames = get_room_usernames(room);
+  for (i in room_user_ids[room]) {
+    var other_id = room_user_ids[room][i];
+    refresh_ink(other_id, room);
+  }
+}
+
+function refresh_ink(id, room) {
+  // refresh ink for one user id
+  user_update_buffer[id].push({type: 'ink', ink: room_ink[room] / lib.MAX_INK});
+}
+
+function clear_room(room) {
+  // delete lines for a room and send clear messages to clients
+  room_data[room] = [];
+  for (i in room_user_ids[room]) {
+    var id = room_user_ids[room][i];
+    user_update_buffer[id].push({type: 'clear'});
   }
 }
 
@@ -60,6 +91,7 @@ var app = http.createServer(function (req, res) {
       if ( typeof room_user_ids[new_room] === 'undefined' ) {
         room_user_ids[new_room] = [];
         room_data[new_room] = [];
+        room_ink[new_room] = 0;
       }
       res.writeHead(200, lib.plain);
       res.end(new_room);
@@ -76,13 +108,13 @@ var app = http.createServer(function (req, res) {
         color: lib.genColor(),
         room: room,
         needs_full_update: true,
-        clear: false
       };
       //TODO: check that room exists
       room_user_ids[room].push(id);
       user_update_buffer[id] = [];
       
       refresh_usernames(room);
+      refresh_ink(id, room);
       
       res.writeHead(200, lib.plain);
       res.end(users[id].color);
@@ -99,21 +131,29 @@ var app = http.createServer(function (req, res) {
         var color = users[id].color;
         var room = users[id].room;
 
-        // json to send to other clients
-        var line_data = { type: "lines", lines: data, color: color }, i;
+        // ink
+        var remaining_ink = lib.MAX_INK - room_ink[room];
+        data = data.slice(0, remaining_ink * 4);
         
-        // figure out who to send the new line data to
-        for (i in room_user_ids[room]) {
-          var other_id = room_user_ids[room][i];
-          if (other_id !== id) {
-            // we have a user which needs this data
-            user_update_buffer[other_id].push(line_data);
+        // if there are lines still allowed after checking ink level
+        if (data !== []) {
+          // json to send to other clients
+          var line_data = { type: "lines", lines: data, color: color }, i;
+          
+          // figure out who to send the new line data to
+          for (i in room_user_ids[room]) {
+            var other_id = room_user_ids[room][i];
+            if (other_id !== id) {
+              // we have a user which needs this data
+              user_update_buffer[other_id].push(line_data);
+            }
           }
+          // always save the data as well
+          room_data[room].push(line_data);
+          // send the new ink level out
+          room_ink[room] += data.length / 4;
+          refresh_ink_room(room);
         }
-        // always save the data as well
-        room_data[room].push(line_data);
-        
-        //TODO: ink level
         
         res.writeHead(200, lib.plain);
         res.end("success");
@@ -131,11 +171,6 @@ var app = http.createServer(function (req, res) {
             users[id].needs_full_update = false;
             user_update_buffer[id] = user_update_buffer[id].concat(room_data[users[id].room]);
           }
-          if (users[id].clear === true) {
-            users[id].clear = false;
-            console.log(id + ' needs to clear');
-            user_update_buffer[id] = 'clear';
-          }
           if (user_update_buffer[id].length !== 0) {
             // there are pending updates to send
             res.writeHead(200, lib.plain);
@@ -150,14 +185,13 @@ var app = http.createServer(function (req, res) {
       } catch(err) {}
     break;
 
-    //TODO: update this for post-refactor
     case '/clear':
       try {
         var room_name = url.parse(req.url).query.toString().replace('room=', ''), i;
-        room_data[room_name] = [];
-        for (i in room_user_ids[room_name]) {
-          users[room_user_ids[room_name][i]].clear = true;
-        }
+        clear_room(room_name);
+        // clear ink level
+        room_ink[room_name] = 0;
+        refresh_ink_room(room_name);
         res.writeHead(200, lib.plain);
         res.end('1');
       } catch (err) {}

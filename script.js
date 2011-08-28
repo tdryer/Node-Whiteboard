@@ -2,12 +2,6 @@ function get_random_id() {
   // TODO: maybe something more robust
   return Math.round(Math.random() * 100000).toString();
 }
-function clearCanvas(context, canvas) {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  var w = canvas.width;
-  canvas.width = 1;
-  canvas.width = w;
-}
 function update_ink(ink_percent) {
   var ink = Math.round(ink_percent*100);
   $('#ink').html('Ink used: ' + ink + '%');
@@ -41,24 +35,27 @@ function canvas_mouse_pos(event, canvas) {
   return { x: event.pageX - canvas.offset().left, 
            y: event.pageY - canvas.offset().top };
 }
+
+var ink_level = 0; // between 0-100 TODO: make not global
+
 function update(room, context, canvas, id) {
   $.getJSON('/update', {id: id}, function(data) {
     // data is a list of update objects
-    if ( data === 'clear' ) {
-      console.log('doing clear');
-      context.clearRect(0,0,canvas.width(),canvas.height());
-    } else {
-      var i;
-      for (i in data) {
-        if (data[i].type === "lines") {
-          draw_lines(context, data[i].lines, data[i].color);
-        } else if (data[i].type === "users") {
-          update_users(room, data[i].users);
-        }
+    var i;
+    for (i in data) {
+      if (data[i].type === "lines") {
+        draw_lines(context, data[i].lines, data[i].color);
+      } else if (data[i].type === "users") {
+        update_users(room, data[i].users);
+      } else if (data[i].type === 'ink') {
+        ink_level = update_ink(data[i].ink);
+      } else if (data[i].type === 'clear') {
+        context.clearRect(0,0,canvas.width(),canvas.height());
       }
     }
   });
 }
+
 function go(name, room, color, id) {
   var canvas = $('#canvas');
   var context = canvas.get(0).getContext('2d');
@@ -67,7 +64,6 @@ function go(name, room, color, id) {
   var mouse_down = false;
   var last_x = -1, last_y = -1; // start of the current line segment
   var line_buffer = []; // lines waiting to be sent to server
-  var ink_level = 0; // between 0-100
   function send_line_segments() {
     // send new line segments to the server and empty the buffer
     // do nothing if there are no lines to send
