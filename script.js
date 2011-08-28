@@ -12,7 +12,7 @@ function update_ink(ink_percent) {
 }
 function update_users(room, data) {
   var i;
-  $('#users').html(room + ': ');
+  $('#users').html('<b>' + room + '</b>: ');
   for ( i in data ) {
     $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }
@@ -117,6 +117,12 @@ function go(name, room, color) {
   $('input[name="share-url"]').click(function(ev){
     ev.preventDefault();
     $('input[name="share-url"]').select();
+  });
+  $(window).unload(function() {
+    $.get('/leave', {
+      name: name,
+      room: room
+    });
   });
 }
 
