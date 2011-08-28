@@ -3,24 +3,35 @@
   <head>
     <meta charset="utf-8">
     <title>Whiteboard - by Team Heisenbug</title>
-    <meta name="description" content="Whiteboard">
-    <meta name="author" content="Team Heisenbug">
+    <meta name="description" content="Node Whiteboard for Node Knockout 2011">
+    <meta name="author" content="Team Heisenbug - David, Michael, Tom">
+    <link href='http://fonts.googleapis.com/css?family=Delius' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="smoke.css">
-    <link rel="stylesheet" href="dark.css">
     <link rel="stylesheet" href="bootstrap-1.1.1.min.css">
     <link rel="stylesheet" href="style.css">
   </head>
-  <body class="container row">
-    <h1>Whiteboard</h1>
-    <h2>by Team Heisenbug</h2>
-    <h3>for NKO</h3>
-    <canvas id="canvas" width="800" height="600">Your browser does not support canvas!</canvas>
-    <p id="users"></p>
-    <p id="ink">Ink used: 0%</p>
-    <a href="#" id="clear-all">Clear all</a>
-    <label for="share-url">Use this url to come back to this room.</label>
-    <input type="text" value="" name="share-url" id="share-url"/>
+  <body>
+    <div class="container">
+      <h1>Node Whiteboard</h1>
+      <div class="row">
+        <div class="span14" id="canvas-holder">
+          <canvas id="canvas" width="800" height="600">Your browser does not support canvas!</canvas>
+        </div>
+        <div class="span2">
+          <p id="users"></p>
+          <p id="ink">Ink used: 0%</p>
+          <a href="#" id="clear-all">Clear all</a>
+        </div>
+      </div>
+      <div class="row">
+        <input type="text" value="" name="share-url" id="share-url" class="" readonly />
+        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+        <g:plusone></g:plusone>
+      </div>
+    </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script defer src="jquery.noisy.min.js"></script>
     <script defer src="smoke.min.js"></script>
     <script defer src="script.js"></script>
   </body>

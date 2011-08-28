@@ -1,12 +1,28 @@
-canvas {
-  cursor: crosshair;
-  float: left;
-  border: 1px solid black;
-  margin-right: 10px;
+body, .smoke {
+  text-align: center;
+  font-family: 'Droid Serif', serif;
+  vertical-align: center;
+}
+img {
+  vertical-align: middle;
+}
+html {
+  background: #ccc;
+}
+body, .container {
+  background: transparent;
+}
+.container {
+  display: none;
+}
+.title {
+  font-family: 'Delius', cursive;
 }
 h1 {
-  margin-top: 20px;
+  font-size: 111px;
+  line-height: 123px;
 }
-input {
-  margin: 10px 0 0 10px;
+#canvas {
+  cursor: crosshair;
+  border: 10px solid black;
 }

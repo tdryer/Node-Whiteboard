@@ -12,6 +12,9 @@ module.exports = {
   },
   js: {
     'Content-Type': 'text/javascript'
+  },
+  png: {
+    'Content-Type': 'image/png'
   }
 };
 
