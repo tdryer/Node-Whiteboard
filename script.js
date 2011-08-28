@@ -85,7 +85,11 @@ function go(name, room, color) {
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
-    clearCanvas(context, canvas.get(0));
+    // tell server to clear this whiteboard
+    $.get('/clear', {room: room}, function(data) {
+      // once the request completes, clear the local canvas
+      clearCanvas(context, canvas.get(0));
+    });
   });
   var on_mousemove = function(ev) {
     var p = canvas_mouse_pos(ev, canvas);

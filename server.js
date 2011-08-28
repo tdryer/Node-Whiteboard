@@ -86,6 +86,13 @@ var app = http.createServer(function (req, res) {
       res.end(JSON.stringify(data));
     break;
 
+    case '/clear':
+      var room_name = url.parse(req.url).query.toString().replace('room=', '');
+      drawings[room_name] = [];
+      res.writeHead(200, lib.plain);
+      res.end('clear');
+    break;
+
     case '/leave':
       var get = url.parse(req.url).query.toString().split('&'),
           name = get[0].replace('name=', ''),
