@@ -1,4 +1,4 @@
-var querystring = require('querystring');
+var qs = require('querystring');
 
 module.exports = {
   plain: {
@@ -44,16 +44,16 @@ module.exports.post_handler = function(request, callback) {
   var _REQUEST = {};
   var _CONTENT = '';
 
-  if (request.method == 'POST') {
+  if (request.method === 'POST') {
     request.addListener('data', function(chunk) {
       _CONTENT+= chunk;
     });
 
     request.addListener('end', function() {
-      _REQUEST = querystring.parse(_CONTENT);
+      _REQUEST = qs.parse(_CONTENT);
       callback(_REQUEST);
     });
-  };
+  }
 };
 
 module.exports.MAX_INK = 2048;

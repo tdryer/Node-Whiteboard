@@ -8,6 +8,9 @@ body, .smoke {
   -o-user-select: none;
   user-select: none;
 }
+body {
+  color: black;
+}
 img {
   vertical-align: middle;
 }
