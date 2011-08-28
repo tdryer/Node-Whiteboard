@@ -46,7 +46,7 @@ function update(room, context, canvas, id) {
     // data is a list of update objects
     if ( data === 'clear' ) {
       console.log('doing clear');
-      canvas.get(0).width = canvas.get(0).width;
+      context.clearRect(0,0,canvas.width(),canvas.height());
     } else {
       var i;
       for (i in data) {
@@ -92,11 +92,7 @@ function go(name, room, color, id) {
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();
-    $.get('/clear', {room: room}, function(data) {
-      if ( data ) {
-        canvas.get(0).width = canvas.get(0).width;
-      }
-    });
+    $.get('/clear', {room: room});
   });
   var on_mousemove = function(ev) {
     var p = canvas_mouse_pos(ev, canvas);
