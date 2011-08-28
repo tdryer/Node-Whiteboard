@@ -111,6 +111,7 @@ var app = http.createServer(function (req, res) {
         if ( typeof room_user_ids[room_name] === 'undefined' ) {
           room_user_ids[room_name] = [];
           room_data[room_name] = [];
+          room_ink[room_name] = [];
         }
       } catch(err) { console.log('err on /'); console.log(err); }
       fs.readFile('index.html', function(err, data) {
