@@ -11,8 +11,9 @@ body, .smoke {
 img {
   vertical-align: middle;
 }
-p {
+p, .blurb {
   text-align: left;
+  font-size: 16px;
 }
 html {
   background: #ccc;

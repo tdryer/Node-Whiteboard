@@ -16,7 +16,7 @@ function update_users(room, data) {
   var i;
   $('#users').html('<b>' + room + '</b>: ');
   for ( i in data ) {
-    $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
+    $('#users').append('<br><span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }
 }
 function update_whiteboard(context, data) {

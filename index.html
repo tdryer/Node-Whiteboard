@@ -18,19 +18,26 @@
         <div class="span14" id="canvas-holder">
           <canvas id="canvas" width="800" height="600">Your browser does not support canvas!</canvas>
         </div>
-        <div class="span2">
+        <div class="span2 blurb">
           <p id="users"></p>
           <p id="ink">Ink used: 0%</p>
           <a href="#" id="clear-all">Clear all</a>
         </div>
       </div>
-      <div class="row">
-        <input type="text" value="" name="share-url" id="share-url" class="" readonly />
-        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-        <g:plusone></g:plusone>
+      <div class="row blurb">
+        <div class="span4">
+          <input type="text" value="" name="share-url" id="share-url" class="" readonly />
+        </div>
+        <div class="span10">
+          Use this link to return to this whiteboard.
+        </div>
+        <div class="span2">
+          <g:plusone></g:plusone>
+        </div>
       </div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
     <script defer src="jquery.noisy.min.js"></script>
     <script defer src="smoke.min.js"></script>
     <script defer src="script.js"></script>
