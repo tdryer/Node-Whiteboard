@@ -18,9 +18,9 @@ function update_ink(ink_percent) {
 }
 function update_users(room, data) {
   var i;
-  $('#users').html('<b>' + room + '</b>: ');
+  $('#users').html('<b>' + room + '</b>:<br>');
   for ( i in data ) {
-    $('#users').append('<span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
+    $('#users').append('<br><span style="color: ' + data[i].color + ';">' + data[i].name + '</span> ');
   }
 }
 function update_whiteboard(context, data) {
@@ -98,6 +98,11 @@ function go(name, room, color, id) {
   setInterval(function() {
     send_line_segments();
     update(room, context, canvas);
+    if (ink_level >= 100) {
+      $('canvas').css('cursor', 'not-allowed');
+    } else {
+      $('canvas').css('cursor', 'crosshair');
+    }
   }, 500);
   $('#clear-all').click(function(ev) {
     ev.preventDefault();

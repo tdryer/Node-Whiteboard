@@ -34,6 +34,14 @@ var app = http.createServer(function (req, res) {
   switch (uri) {
 
     case '/':
+      try {
+        var room_name = url.parse(req.url).query.toString().replace('room=', '');
+        if ( typeof rooms[room_name] === 'undefined' ) {
+          rooms[room_name] = [];
+          drawings[room_name] = [];
+          num_of_lines[room_name] = 0;
+        }
+      } catch(err) {}
       fs.readFile('index.html', function(err, data) {
         res.writeHead(200, lib.html);
         res.end(data);
