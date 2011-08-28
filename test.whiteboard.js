@@ -1,8 +1,16 @@
-var Whiteboard = require('./whiteboard').Whiteboard;
+//var Whiteboard = require('./whiteboard').Whiteboard;
+var CList = require('./whiteboard').CList;
 
-var x = new Whiteboard('mofomofo');
+//var x = new Whiteboard('mofomofo');
+//for (var i = 1; i < 10; i++) {
+//  x.add_line(i, i+1, i+2, i+3);
+//}
+//for (l in x.board) {
+//  console.log(x.board[l].pretty());
+//}
 
-x.load();
-x.add_line(1, 2, 3, 4);
-console.log(x);
-x.print_board();
+var list = new CList(5000);
+console.log('Size: ' + list.size);
+list.add(1337);
+var x = list.get(0);
+//console.log('list[0] = ' + x);
