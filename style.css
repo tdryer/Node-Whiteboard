@@ -3,6 +3,9 @@ body, .smoke {
   font-family: 'Droid Serif', serif;
   vertical-align: center;
 }
+img {
+  vertical-align: middle;
+}
 html {
   background: #ccc;
 }
